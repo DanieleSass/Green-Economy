@@ -8,12 +8,13 @@ namespace Green_Economy
 {
     internal class CInfo
     {
-        DateTime data;
-        float temperatura;
+        public DateTime data { get; set; }
+        public float temperatura { get; set; }
 
-        public CInfo()
+        public CInfo(DateTime d, float t)
         {
-
+            data = d;
+            temperatura = t;
         }
     }
 }
