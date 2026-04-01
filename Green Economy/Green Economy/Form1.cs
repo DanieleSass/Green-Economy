@@ -5,6 +5,7 @@ namespace Green_Economy
         public Form1()
         {
             InitializeComponent();
+            //ciao
         }
     }
 }
