@@ -12,7 +12,7 @@ namespace Green_Economy
         BindingList<CInfo> lista;
         string path;
 
-        static readonly HttpClient client = new();
+        static readonly HttpClient client = new(); //comunica col server, riceve i dati(socket)
         //classe per fare richiesta http, statico così esiste una sola istanza condivisa
         //non serve crearne una nuova ogni volta che si fa una richiesta, sennò socket intasati
         public Form1()
@@ -27,7 +27,7 @@ namespace Green_Economy
         {
             dgv_tempo_temperatura.DataSource = lista;   //abbino la lista e le sue info al dgv
             CInfo c;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)  //serve per creare
             {
                 c = new(DateTime.Now.AddDays(-i * (i % 2)), 20 + i, i * (i % 2));
 
@@ -70,7 +70,7 @@ namespace Green_Economy
 
             if (lista == null || lista.Count == 0)
             {
-                MessageBox.Show("Nessun elemento da valutare", "Errore", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning);
+                MessageBox.Show("Nessun elemento da valutare", "Attenzione", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -83,7 +83,7 @@ namespace Green_Economy
             double[] inqu = new double[lista.Count];
             for (int i = 0; i < lista.Count; i++)
             {
-                date[i] = lista[i].Data.ToOADate();
+                date[i] = lista[i].Data.ToOADate(); //converte datetime in double
                 temp[i] = lista[i].Temperatura;
                 inqu[i] = lista[i].Inquinamento;
             }
@@ -109,7 +109,7 @@ namespace Green_Economy
             plt_tempo_temperatura.Plot.Axes.DateTimeTicksBottom();
 
             plt_tempo_temperatura.Plot.ShowLegend(); //mostra legenda (già di default)
-            plt_tempo_temperatura.Refresh();    //aggiorna graficamente
+            plt_tempo_temperatura.Refresh();    //aggiorna graficamente(ridondante, per sicurezza)
         }
 
         private void SalvaSuDatabase()
@@ -124,14 +124,12 @@ namespace Green_Economy
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Data DATETIME,
                     Temperatura REAL,
-                    Inquinamento REAL  -- Aggiungi questa colonna!
+                    Inquinamento REAL
                     )"
                     );
 
                     //passo direttamente la lista, Dapper legge le proprietà di CInfo e 
                     //le inserisce in automatico nel database riga per riga, senza dover scrivere un ciclo for o foreach
-                    // Lui legge le proprietà 'data' e 'temperatura' della tua classe CInfo
-                    // e le inserisce nel DB riga per riga automaticamente.
                     string sql = "INSERT INTO StoricoMeteo (Data, Temperatura, Inquinamento) VALUES (@Data, @Temperatura, @Inquinamento)";
                     database.Execute(sql, lista);
                     //MessageBox.Show("Dati salvati su database con successo!");
@@ -149,7 +147,7 @@ namespace Green_Economy
         {
             string url = $"https://api.open-meteo.com/v1/forecast" +
                  $"?latitude=45.41&longitude=11.87" +
-                 $"&hourly=temperature_2m" +
+                 $"&hourly=temperature_2m" +  //qui ci sono le informazioni da richiedere(temperature 2m)
                  $"&timezone=Europe%2FRome" +
                  $"&past_days={d}";
 
@@ -158,13 +156,25 @@ namespace Green_Economy
             //contiene sia la risposta, sia lo stato della risposta (200 ok, 404 not found, ecc)
 
             //controlla se la risposta è positiva (200-299), altrimenti lancia un'eccezione
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                response.EnsureSuccessStatusCode();
 
-            //legge la risposta, api da noi usata dà risposte formattate in json
-            string txt = await response.Content.ReadAsStringAsync();
+                //legge la risposta, api da noi usata dà risposte formattate in json
+                string txt = await response.Content.ReadAsStringAsync();
 
-            //lo converte nell' oggetto meteo a partire dalla stringa
-            return JsonConvert.DeserializeObject<MessaggioAPI<Meteo>>(txt).hourly;
+                //lo converte nell' oggetto meteo a partire dalla stringa
+                return JsonConvert.DeserializeObject<MessaggioAPI<Meteo>>(txt).hourly;
+            }
+            catch(HttpRequestException http_ex) 
+            {
+                MessageBox.Show(http_ex.Message);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            return null;
         }
 
         private async Task<QualitaAria> LeggiAriaDaAPI(int d = 7)
