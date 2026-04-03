@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             plt_tempo_temperatura = new ScottPlot.WinForms.FormsPlot();
             btn_avvia = new Button();
             dgv_tempo_temperatura = new DataGridView();
@@ -37,6 +37,8 @@
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
+            label4 = new Label();
+            label5 = new Label();
             ((System.ComponentModel.ISupportInitialize)dgv_tempo_temperatura).BeginInit();
             SuspendLayout();
             // 
@@ -70,14 +72,14 @@
             dgv_tempo_temperatura.BorderStyle = BorderStyle.Fixed3D;
             dgv_tempo_temperatura.CellBorderStyle = DataGridViewCellBorderStyle.Sunken;
             dgv_tempo_temperatura.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = SystemColors.Window;
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle1.ForeColor = Color.FromArgb(0, 192, 0);
-            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(192, 255, 192);
-            dataGridViewCellStyle1.SelectionForeColor = Color.FromArgb(0, 64, 0);
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgv_tempo_temperatura.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = SystemColors.Window;
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = Color.FromArgb(0, 192, 0);
+            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(192, 255, 192);
+            dataGridViewCellStyle3.SelectionForeColor = Color.FromArgb(0, 64, 0);
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
+            dgv_tempo_temperatura.DefaultCellStyle = dataGridViewCellStyle3;
             dgv_tempo_temperatura.Location = new Point(549, 138);
             dgv_tempo_temperatura.MultiSelect = false;
             dgv_tempo_temperatura.Name = "dgv_tempo_temperatura";
@@ -134,12 +136,32 @@
             label3.TabIndex = 7;
             label3.Text = "mettere unità di misura";
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(919, 13);
+            label4.Name = "label4";
+            label4.Size = new Size(603, 20);
+            label4.TabIndex = 8;
+            label4.Text = "fare in modo che si possa devidere quale citta analizzare, con quanti giorni di analisi ecc...";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(252, 477);
+            label5.Name = "label5";
+            label5.Size = new Size(238, 20);
+            label5.TabIndex = 9;
+            label5.Text = "fare notifyIcon e contextMenuStrip";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(128, 255, 128);
             ClientSize = new Size(1320, 523);
+            Controls.Add(label5);
+            Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -166,5 +188,7 @@
         private Label label1;
         private Label label2;
         private Label label3;
+        private Label label4;
+        private Label label5;
     }
 }

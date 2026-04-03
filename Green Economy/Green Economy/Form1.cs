@@ -1,7 +1,9 @@
 ﻿using Dapper;   //per database
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
-using System.ComponentModel;    //per binding list
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.DirectoryServices;    //per binding list
 namespace Green_Economy
 {
     public partial class Form1 : Form
@@ -257,6 +259,15 @@ namespace Green_Economy
             dgv_tempo_temperatura.DataSource = lista;
         }
 
+    }
+
+
+    [Flags] //permette di includere più di un valore alla volta
+    public enum DatoDaAnalizzare    //parametro per capire cosa è richiesto dall' utente
+    {
+        Meteo,
+        Aria,
+        //eventuali altri, facilmente scalabile
     }
 
 
