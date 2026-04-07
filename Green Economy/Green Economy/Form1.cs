@@ -2,16 +2,18 @@
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System.Configuration;
 namespace Green_Economy
 {
     public partial class Form1 : Form
-    {
+    { 
 
         //API OPEN-METEO = https://open-meteo.com/en/docs
 
         BindingList<CInfo> lista;
+        Impostazioni settings;
         string path;
-
+        //FAI BEGIN INVOKE PER GESTIRE THREAD UI
         static readonly HttpClient client = new(); //comunica col server, riceve i dati(socket)
         //classe per fare richiesta http, statico così esiste una sola istanza condivisa
         //non serve crearne una nuova ogni volta che si fa una richiesta, sennò socket intasati
@@ -19,21 +21,22 @@ namespace Green_Economy
         {
             InitializeComponent();
             lista = new();
+            path = Path.Combine(Directory.GetCurrentDirectory(), "../../File");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             path = Path.Combine(Directory.GetCurrentDirectory(), "../../File/dati.json");
-
+            if (!File.Exists(path))
+            {
+                File.Create(path).Close(); //cosi il file non risulta utilizzato da un altro processo
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             LeggiFile();
             dgv_tempo_temperatura.DataSource = lista;   //abbino la lista e le sue info al dgv
-            CInfo c;
-            for (int i = 0; i < 10; i++)  //serve per creare
-            {
-                c = new(DateTime.Now.AddDays(-i * (i % 2)), 20 + i, i * (i % 2));
-
-                lista.Add(c);
-            }
             CreaGrafico();
         }
 
@@ -41,6 +44,7 @@ namespace Green_Economy
         {
 
             //fare controllo se esiste cartella e file, altrimenti crearli
+
             try
             {
                 string txt = JsonConvert.SerializeObject(lista, Formatting.Indented);
@@ -113,35 +117,6 @@ namespace Green_Economy
             plt_tempo_temperatura.Refresh();    //aggiorna graficamente(ridondante, per sicurezza)
         }
 
-        private void SalvaSuDatabase()
-        {
-            string connessione = "Data Source=MeteoDati.db";
-            try
-            {
-                using (var database = new SqliteConnection(connessione))
-                {
-                    database.Open();
-                    database.Execute(@"CREATE TABLE IF NOT EXISTS StoricoMeteo (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Data DATETIME,
-                    Temperatura REAL,
-                    Inquinamento REAL
-                    )"
-                    );
-
-                    //passo direttamente la lista, Dapper legge le proprietà di CInfo e 
-                    //le inserisce in automatico nel database riga per riga, senza dover scrivere un ciclo for o foreach
-                    string sql = "INSERT INTO StoricoMeteo (Data, Temperatura, Inquinamento) VALUES (@Data, @Temperatura, @Inquinamento)";
-                    database.Execute(sql, lista);
-                    //MessageBox.Show("Dati salvati su database con successo!");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Errore: " + ex.Message);
-            }
-        }
-
         private void ScriviSuDGV()
         {
             //oppure fare inserimento manuale riga per riga
@@ -169,47 +144,11 @@ namespace Green_Economy
             }
         }
 
-        private async Task OnSalvaImpostazioni(object sender, ImpostazioniEventArgs e)
+        private async void OnSalvaImpostazioni(object sender, ImpostazioniEventArgs e)
         {
             Impostazioni imp = e.impostazioni;
-            double longitudine = imp.citta.Longitudine;
-            double latitudine = imp.citta.Latitudine;
-
-            Task<Meteo> tMeteo = null;
-            Task<QualitaAria> tAria = null;
-
-            if (imp.flags.Contains(DatoDaAnalizzare.Meteo))
-            {
-                string urlMeteo = $"https://api.open-meteo.com/v1/forecast" +
-                $"?latitude={latitudine}&longitude={longitudine}" +
-                $"&hourly=temperature_2m" +
-                $"&timezone=Europe%2FRome" +
-                $"&past_days={imp.giorni}";
-                tMeteo=LeggiDatiAPI<Meteo>(urlMeteo);
-            }
-
-
-            if (imp.flags.Contains(DatoDaAnalizzare.Aria))
-            {
-                string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality" +
-                $"?latitude={latitudine}&longitude={longitudine}" +
-                $"&hourly=pm2_5" +
-                $"&timezone=Europe%2FRome" +
-                $"&past_days={imp.giorni}";
-
-                tAria= LeggiDatiAPI<QualitaAria>(urlAria);
-            }
-
-            List<Task> tasks = new List<Task>();
-            tasks.Add(tMeteo);
-            tasks.Add(tAria);
-            await Task.WhenAll(tasks);
-
-
-            //letti i dati fare qualcosa, tipo mostrarli, salvarli nella lista, fare controlli null
-            //  SE ANCHE SOLO UN DATO è NULL (O TEMP, O INQUIN, O DATA è NULL), SCARATARE INTERA RIGA   
-            
-            AggiornaDati(tasks);
+            settings = imp;
+            Aggiornamento();
         }
 
         //fare questa funzione asincrona
@@ -238,9 +177,45 @@ namespace Green_Economy
                 lista.Add(c);
             }
             CreaGrafico();
-            SalvaSuDatabase();
         }
+        private async Task Aggiornamento() //funzione bisello, incaricata da daniele
+        {
+            Task<Meteo> tMeteo = null;
+            Task<QualitaAria> tAria = null;
 
+            if (settings.flags.Contains(DatoDaAnalizzare.Meteo))
+            {
+                string urlMeteo = $"https://api.open-meteo.com/v1/forecast" +
+                $"?latitude={settings.citta.Latitudine}&longitude={settings.citta.Longitudine}" +
+                $"&hourly=temperature_2m" +
+                $"&timezone=Europe%2FRome" +
+                $"&past_days={settings.giorni}";
+                tMeteo = LeggiDatiAPI<Meteo>(urlMeteo);
+            }
+
+
+            if (settings.flags.Contains(DatoDaAnalizzare.Aria))
+            {
+                string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality" +
+                $"?latitude={settings.citta.Latitudine} &longitude= {settings.citta.Longitudine}" +
+                $"&hourly=pm2_5" +
+                $"&timezone=Europe%2FRome" +
+                $"&past_days={settings.giorni}";
+
+                tAria = LeggiDatiAPI<QualitaAria>(urlAria);
+            }
+
+            List<Task> tasks = new List<Task>();
+            tasks.Add(tMeteo);
+            tasks.Add(tAria);
+            await Task.WhenAll(tasks);
+
+
+            //letti i dati fare qualcosa, tipo mostrarli, salvarli nella lista, fare controlli null
+            //  SE ANCHE SOLO UN DATO è NULL (O TEMP, O INQUIN, O DATA è NULL), SCARATARE INTERA RIGA   
+
+            AggiornaDati(tasks);
+        }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             DialogResult risposta = MessageBox.Show("Salvare gli ultimi dati scaricati in un file?", "Salvataggio Dati", MessageBoxButtons.YesNo);
@@ -259,7 +234,7 @@ namespace Green_Economy
         {
             try
             {
-                Task<Meteo> taskMeteo = LeggiMeteoDaAPI(7);
+                Task<Meteo> taskMeteo = LeggiMeteoDaAPI(7) ;
                 Task<QualitaAria> taskAria = LeggiAriaDaAPI(7);
 
                 //aspetta che le finiscano di leggere i dati entrambe
@@ -281,7 +256,6 @@ namespace Green_Economy
                     lista.Add(c);
                 }
                 CreaGrafico();
-                SalvaSuDatabase();
                 //ScriviSuDGV();
             }
             catch (HttpRequestException ex)
