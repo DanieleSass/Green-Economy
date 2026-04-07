@@ -60,7 +60,7 @@
             btn_avvia.TabIndex = 1;
             btn_avvia.Text = "AVVIA LETTURA DATI METEO";
             btn_avvia.UseVisualStyleBackColor = true;
-            btn_avvia.Click += btn_avvia_Click;
+            btn_avvia.Click += btn_avvia_Click_1;
             // 
             // dgv_tempo_temperatura
             // 
@@ -170,7 +170,7 @@
             // 
             btn_scelta.Location = new Point(960, 262);
             btn_scelta.Name = "btn_scelta";
-            btn_scelta.Size = new Size(154, 108);
+            btn_scelta.Size = new Size(169, 108);
             btn_scelta.TabIndex = 11;
             btn_scelta.Text = "Impostazioni Dati da visualizzare";
             btn_scelta.UseVisualStyleBackColor = true;
@@ -196,6 +196,7 @@
             Controls.Add(plt_tempo_temperatura);
             Name = "Form1";
             Text = "Form1";
+            FormClosing += Form1_FormClosing;
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)dgv_tempo_temperatura).EndInit();
             ResumeLayout(false);

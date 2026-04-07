@@ -50,7 +50,7 @@
             // lbl_citta
             // 
             lbl_citta.AutoSize = true;
-            lbl_citta.Location = new Point(85, 153);
+            lbl_citta.Location = new Point(85, 116);
             lbl_citta.Name = "lbl_citta";
             lbl_citta.Size = new Size(132, 20);
             lbl_citta.TabIndex = 1;
@@ -58,11 +58,12 @@
             // 
             // cmb_citta
             // 
-            cmb_citta.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmb_citta.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            cmb_citta.AutoCompleteSource = AutoCompleteSource.ListItems;
             cmb_citta.FormattingEnabled = true;
-            cmb_citta.Location = new Point(316, 156);
+            cmb_citta.Location = new Point(254, 116);
             cmb_citta.Name = "cmb_citta";
-            cmb_citta.Size = new Size(121, 28);
+            cmb_citta.Size = new Size(277, 28);
             cmb_citta.TabIndex = 2;
             // 
             // nmr_giorni
@@ -80,7 +81,7 @@
             chc_dati.FormattingEnabled = true;
             chc_dati.Location = new Point(97, 241);
             chc_dati.Name = "chc_dati";
-            chc_dati.Size = new Size(388, 180);
+            chc_dati.Size = new Size(434, 180);
             chc_dati.TabIndex = 4;
             // 
             // btn_salva

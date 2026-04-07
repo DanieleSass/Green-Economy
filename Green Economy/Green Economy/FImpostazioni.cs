@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,7 +15,11 @@ namespace Green_Economy
     public partial class FImpostazioni : Form
     {
         public event EventHandler<ImpostazioniEventArgs> SalvaImpostazioni;
-        
+
+        static readonly HttpClient client = new(); //comunica col server, riceve i dati(socket)
+        //classe per fare richiesta http, statico così esiste una sola istanza condivisa
+        //non serve crearne una nuova ogni volta che si fa una richiesta, sennò socket intasati
+
         public FImpostazioni()
         {
             InitializeComponent();
@@ -21,10 +27,33 @@ namespace Green_Economy
 
         private void FImpostazioni_Load(object sender, EventArgs e)
         {
+
+            //popola checkbox list
             foreach (DatoDaAnalizzare valore in Enum.GetValues(typeof(DatoDaAnalizzare)))
             {
                 chc_dati.Items.Add(valore);
             }
+            LeggiCittà();
+        }
+
+        private void LeggiCittà() //legge da file json
+        {
+            try
+            {
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "../../File/comuni.json");
+                string txt = File.ReadAllText(path);
+                var lista = JsonConvert.DeserializeObject<List<Città>>(txt);
+                foreach (Città c in lista)
+                {
+                    cmb_citta.Items.Add(c);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Errore: " + ex.Message);
+            }
+
+            
         }
 
         private void btn_annulla_Click(object sender, EventArgs e)
@@ -46,26 +75,52 @@ namespace Green_Economy
             }
 
             int giorni = (int)nmr_giorni.Value;
+            
+            Città citta = (Città)cmb_citta.SelectedItem;
+            if(citta == null)
+            {
+                MessageBox.Show("Seleziona una città");
+                return;
+            }
 
-                //PASSARE COME PARAMETRO ANCHE LA CITTà
-
-            Impostazioni impo = new(giorni, flagRichiesti);
+            Impostazioni impo = new(giorni,citta,flagRichiesti);
             SalvaImpostazioni?.Invoke(this, new ImpostazioniEventArgs(impo));
             this.Close();
         }
     }
+
+    public class Città
+    {
+        [JsonProperty("denominazione_ita")] //quando file viene deserializzato controlla questo nome e non quello della proprietà
+        public string Nome { get; set; }
+
+        [JsonProperty("sigla_provincia")]
+        public string Provincia { get; set; }
+
+        [JsonProperty("lat")]
+        public double Latitudine { get; set; }
+
+        [JsonProperty("lon")]
+        public double Longitudine { get; set; }
+        public override string ToString()   //lo rende "leggibile" nella combobox
+        {
+            return $"{Nome} ({Provincia})";
+        }
+    }
+
 
     public class Impostazioni
     {
         public int giorni { get; set; }
         //serve latitutidine e longitudine della città penso, guardare documentazione API
         //meglio se basta solo la citta
-
+        public Città citta { get; set; }
         public List<DatoDaAnalizzare> flags { get; set; }
-        public Impostazioni(int giorni, List<DatoDaAnalizzare> flags)
+        public Impostazioni(int giorni,Città citta ,List<DatoDaAnalizzare> flags)
         {
             this.giorni = giorni;
             this.flags = flags;
+            this.citta = citta;
         }
     }
 

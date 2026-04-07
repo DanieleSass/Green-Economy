@@ -25,6 +25,7 @@ namespace Green_Economy
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            LeggiFile();
             dgv_tempo_temperatura.DataSource = lista;   //abbino la lista e le sue info al dgv
             CInfo c;
             for (int i = 0; i < 10; i++)  //serve per creare
@@ -141,74 +142,120 @@ namespace Green_Economy
             }
         }
 
-
-        //async task così mentre legge i dati non blocca l'interfaccia grafica
-      
-        /*
-        
-        private async Task<Meteo> LeggiMeteoDaAPI(int d = 7)
+        private void ScriviSuDGV()
         {
-            string url = $"https://api.open-meteo.com/v1/forecast" +
-                 $"?latitude=45.41&longitude=11.87" +
-                 $"&hourly=temperature_2m" +  //qui ci sono le informazioni da richiedere(temperature 2m)
-                 $"&timezone=Europe%2FRome" +
-                 $"&past_days={d}";
+            //oppure fare inserimento manuale riga per riga
 
-            //invia richiesta http get a indirizzo scritto
-            HttpResponseMessage response = await client.GetAsync(url);
-            //contiene sia la risposta, sia lo stato della risposta (200 ok, 404 not found, ecc)
-
-            //controlla se la risposta è positiva (200-299), altrimenti lancia un'eccezione
-            try
-            {
-                response.EnsureSuccessStatusCode();
-
-                //legge la risposta, api da noi usata dà risposte formattate in json
-                string txt = await response.Content.ReadAsStringAsync();
-
-                //lo converte nell' oggetto meteo a partire dalla stringa
-                return JsonConvert.DeserializeObject<MessaggioAPI<Meteo>>(txt).hourly;
-            }
-            catch (HttpRequestException http_ex)
-            {
-                MessageBox.Show(http_ex.Message);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            return null;
+            //scolleghi la lista
+            dgv_tempo_temperatura.DataSource = null;
+            //la ricolleghi così dgv è costretto a rileggere tutto
+            dgv_tempo_temperatura.DataSource = lista;
         }
 
-        private async Task<QualitaAria> LeggiAriaDaAPI(int d = 7)
+        private void btn_rapporto_misure_Click(object sender, EventArgs e)
         {
-            string url = $"https://air-quality-api.open-meteo.com/v1/air-quality" +
-                 $"?latitude=45.41&longitude=11.87" +
-                 $"&hourly=pm2_5" +
-                 $"&timezone=Europe%2FRome" +
-                 $"&past_days={d}";
-
-            //invia richiesta http get a indirizzo scritto
-            HttpResponseMessage response = await client.GetAsync(url);
-            //contiene sia la risposta, sia lo stato della risposta (200 ok, 404 not found, ecc)
-
-            //controlla se la risposta è positiva (200-299), altrimenti lancia un'eccezione
-            response.EnsureSuccessStatusCode();
-
-            //legge la risposta, api da noi usata dà risposte formattate in json
-            string txt = await response.Content.ReadAsStringAsync();
-
-            //lo converte nell' oggetto meteo a partire dalla stringa
-            return JsonConvert.DeserializeObject<MessaggioAPI<QualitaAria>>(txt).hourly;
+            using (FRelazioneDati form = new FRelazioneDati(lista))
+            {
+                form.ShowDialog();
+            }
         }
 
+        private void btn_scelta_Click(object sender, EventArgs e)
+        {
+            using (FImpostazioni form = new FImpostazioni())
+            {
+                form.SalvaImpostazioni += OnSalvaImpostazioni;
+                form.ShowDialog();
+            }
+        }
 
-        //le due funzioni sopra si potrebbe unire, chiedendo come parametro il tipo (meteo /inquinamento) e ritornare il
-        //tipo generale (classe wrapper) in modo tale "risparmiare" codice
+        private async Task OnSalvaImpostazioni(object sender, ImpostazioniEventArgs e)
+        {
+            Impostazioni imp = e.impostazioni;
+            double longitudine = imp.citta.Longitudine;
+            double latitudine = imp.citta.Latitudine;
+
+            Task<Meteo> tMeteo = null;
+            Task<QualitaAria> tAria = null;
+
+            if (imp.flags.Contains(DatoDaAnalizzare.Meteo))
+            {
+                string urlMeteo = $"https://api.open-meteo.com/v1/forecast" +
+                $"?latitude={latitudine}&longitude={longitudine}" +
+                $"&hourly=temperature_2m" +
+                $"&timezone=Europe%2FRome" +
+                $"&past_days={imp.giorni}";
+                tMeteo=LeggiDatiAPI<Meteo>(urlMeteo);
+            }
+
+
+            if (imp.flags.Contains(DatoDaAnalizzare.Aria))
+            {
+                string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality" +
+                $"?latitude={latitudine}&longitude={longitudine}" +
+                $"&hourly=pm2_5" +
+                $"&timezone=Europe%2FRome" +
+                $"&past_days={imp.giorni}";
+
+                tAria= LeggiDatiAPI<QualitaAria>(urlAria);
+            }
+
+            List<Task> tasks = new List<Task>();
+            tasks.Add(tMeteo);
+            tasks.Add(tAria);
+            await Task.WhenAll(tasks);
+
+
+            //letti i dati fare qualcosa, tipo mostrarli, salvarli nella lista, fare controlli null
+            //  SE ANCHE SOLO UN DATO è NULL (O TEMP, O INQUIN, O DATA è NULL), SCARATARE INTERA RIGA   
+            
+            AggiornaDati(tasks);
+        }
+
+        //fare questa funzione asincrona
+        private void AggiornaDati(List<Task> info)
+        {
+            //qui dentro popolare la lista con i valori presi dall' api
+            lista.Clear();
+            Meteo m;
+            QualitaAria a;
+            if (info.Contains(Meteo))
+            {
+                m = info.OfType<Meteo>().FirstOrDefault();
+            }
+            if (info.Contains(QualitaAria))
+            {
+                a = info.OfType<QualitaAria>().FirstOrDefault();
+            }
+            int min = Math.Min(m.time.Count, a.time.Count);
+            CInfo c;
+            for(int i =0; i < min; i++)
+            {
+                if (m.temperature_2m[i] == null)
+                    c = new(DateTime.Parse(m.time[i]), 0, 0);
+                else
+                    c = new(DateTime.Parse(m.time[i]), (float)(m.temperature_2m[i] ?? 0), (float)(a.pm2_5[i]));
+                lista.Add(c);
+            }
+            CreaGrafico();
+            SalvaSuDatabase();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult risposta = MessageBox.Show("Salvare gli ultimi dati scaricati in un file?", "Salvataggio Dati", MessageBoxButtons.YesNo);
+            if (risposta == DialogResult.Yes)
+            {
+                ScriviFile();
+            }
+
+        }
+
 
 
         //FIXARE ASYNC VOID-->TASK
-        private async void btn_avvia_Click(object sender, EventArgs e)
+
+        private async Task btn_avvia_Click_1(object sender, EventArgs e)
         {
             try
             {
@@ -245,82 +292,10 @@ namespace Green_Economy
             {
                 MessageBox.Show("Errore: " + ex.Message);
             }
-
-        }
-        */
-
-
-        private void ScriviSuDGV()
-        {
-            //oppure fare inserimento manuale riga per riga
-
-            //scolleghi la lista
-            dgv_tempo_temperatura.DataSource = null;
-            //la ricolleghi così dgv è costretto a rileggere tutto
-            dgv_tempo_temperatura.DataSource = lista;
         }
 
-        private void btn_rapporto_misure_Click(object sender, EventArgs e)
-        {
-            using (FRelazioneDati form = new FRelazioneDati(lista))
-            {
-                form.ShowDialog();
-            }
-        }
-
-        private void btn_scelta_Click(object sender, EventArgs e)
-        {
-            using (FImpostazioni form = new FImpostazioni())
-            {
-                form.SalvaImpostazioni += OnSalvaImpostazioni;
-                form.ShowDialog();
-            }
-        }
-
-        private void OnSalvaImpostazioni(object sender, ImpostazioniEventArgs e)
-        {
-            Impostazioni imp = e.impostazioni;
-
-            List<Task> tasks = new();
-
-            if (imp.flags.Contains(DatoDaAnalizzare.Meteo))
-            {
-                string urlMeteo = $"https://api.open-meteo.com/v1/forecast" +
-                $"?latitude=45.41&longitude=11.87" +
-                $"&hourly=temperature_2m" +
-                $"&timezone=Europe%2FRome" +
-                $"&past_days={imp.giorni}";
-                tasks.Add(LeggiDatiAPI<Meteo>(urlMeteo));
-            }
 
 
-            if (imp.flags.Contains(DatoDaAnalizzare.Aria))
-            {
-                string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality" +
-                $"?latitude=45.41&longitude=11.87" +
-                $"&hourly=pm2_5" +
-                $"&timezone=Europe%2FRome" +
-                $"&past_days={imp.giorni}";
-
-                tasks.Add(LeggiDatiAPI<QualitaAria>(urlAria));
-            }
-
-            //o facciamo async void nell' evento oppure fai delegato, vedi te
-            await Task.WhenAll(tasks);
-
-            //letti i dati fare qualcosa, tipo mostrarli, salvarli nella lista, fare controlli null
-            //  SE ANCHE SOLO UN DATO è NULL (O TEMP, O INQUIN, O DATA è NULL), SCARATARE INTERA RIGA   
-            AggiornaDati();
-        }
-
-        //fare questa funzione asincrona
-        private void AggiornaDati()
-        {
-            //qui dentro popolare la lista con i valori presi dall' api
-
-            CreaGrafico();
-            SalvaSuDatabase();
-        }
 
         private async Task<T> LeggiDatiAPI<T>(string url)
         {
