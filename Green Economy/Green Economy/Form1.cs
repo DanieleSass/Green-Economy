@@ -1,9 +1,7 @@
 ﻿using Dapper;   //per database
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.DirectoryServices;    //per binding list
 namespace Green_Economy
 {
     public partial class Form1 : Form
@@ -145,6 +143,9 @@ namespace Green_Economy
 
 
         //async task così mentre legge i dati non blocca l'interfaccia grafica
+      
+        /*
+        
         private async Task<Meteo> LeggiMeteoDaAPI(int d = 7)
         {
             string url = $"https://api.open-meteo.com/v1/forecast" +
@@ -168,11 +169,11 @@ namespace Green_Economy
                 //lo converte nell' oggetto meteo a partire dalla stringa
                 return JsonConvert.DeserializeObject<MessaggioAPI<Meteo>>(txt).hourly;
             }
-            catch(HttpRequestException http_ex) 
+            catch (HttpRequestException http_ex)
             {
                 MessageBox.Show(http_ex.Message);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -221,7 +222,7 @@ namespace Green_Economy
                 //for (int i = 0; i < 10; i++)
                 lista.Clear();
                 CInfo c;
-                
+
                 //fixare questo, cioè bisogna fare controllo != null dentro for per evitare di perdere dati di uno dei 2
                 int numeroCicli = Math.Min(meteo.time.Count, aria.time.Count); //per evitare errori se i dati hanno lunghezze diverse
                 for (int i = 0; i < numeroCicli; i++)  //mostra tutti i dati raccolti
@@ -246,7 +247,7 @@ namespace Green_Economy
             }
 
         }
-
+        */
 
 
         private void ScriviSuDGV()
@@ -259,10 +260,87 @@ namespace Green_Economy
             dgv_tempo_temperatura.DataSource = lista;
         }
 
+        private void btn_rapporto_misure_Click(object sender, EventArgs e)
+        {
+            using (FRelazioneDati form = new FRelazioneDati(lista))
+            {
+                form.ShowDialog();
+            }
+        }
+
+        private void btn_scelta_Click(object sender, EventArgs e)
+        {
+            using (FImpostazioni form = new FImpostazioni())
+            {
+                form.SalvaImpostazioni += OnSalvaImpostazioni;
+                form.ShowDialog();
+            }
+        }
+
+        private void OnSalvaImpostazioni(object sender, ImpostazioniEventArgs e)
+        {
+            Impostazioni imp = e.impostazioni;
+
+            List<Task> tasks = new();
+
+            if (imp.flags.Contains(DatoDaAnalizzare.Meteo))
+            {
+                string urlMeteo = $"https://api.open-meteo.com/v1/forecast" +
+                $"?latitude=45.41&longitude=11.87" +
+                $"&hourly=temperature_2m" +
+                $"&timezone=Europe%2FRome" +
+                $"&past_days={imp.giorni}";
+                tasks.Add(LeggiDatiAPI<Meteo>(urlMeteo));
+            }
+
+
+            if (imp.flags.Contains(DatoDaAnalizzare.Aria))
+            {
+                string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality" +
+                $"?latitude=45.41&longitude=11.87" +
+                $"&hourly=pm2_5" +
+                $"&timezone=Europe%2FRome" +
+                $"&past_days={imp.giorni}";
+
+                tasks.Add(LeggiDatiAPI<QualitaAria>(urlAria));
+            }
+
+            //o facciamo async void nell' evento oppure fai delegato, vedi te
+            await Task.WhenAll(tasks);
+
+            //letti i dati fare qualcosa, tipo mostrarli, salvarli nella lista, fare controlli null
+            //  SE ANCHE SOLO UN DATO è NULL (O TEMP, O INQUIN, O DATA è NULL), SCARATARE INTERA RIGA   
+            AggiornaDati();
+        }
+
+        //fare questa funzione asincrona
+        private void AggiornaDati()
+        {
+            //qui dentro popolare la lista con i valori presi dall' api
+
+            CreaGrafico();
+            SalvaSuDatabase();
+        }
+
+        private async Task<T> LeggiDatiAPI<T>(string url)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                string txt = await response.Content.ReadAsStringAsync();
+
+                return JsonConvert.DeserializeObject<MessaggioAPI<T>>(txt).hourly;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Errore: " + ex.Message);
+            }
+            return default;
+        }
     }
 
-
-    [Flags] //permette di includere più di un valore alla volta
     public enum DatoDaAnalizzare    //parametro per capire cosa è richiesto dall' utente
     {
         Meteo,

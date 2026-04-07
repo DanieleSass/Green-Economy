@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace Green_Economy
 {
-    internal class CInfo
+    public class CInfo
     {
         [DisplayName("Data e Ora")] //nome mostrato nel dgv, altrimenti
                                     //verrebbe mostrato il nome della proprietà
