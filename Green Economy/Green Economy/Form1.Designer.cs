@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
             plt_tempo_temperatura = new ScottPlot.WinForms.FormsPlot();
             btn_avvia = new Button();
             dgv_tempo_temperatura = new DataGridView();
@@ -54,7 +54,6 @@
             // btn_avvia
             // 
             btn_avvia.BackColor = Color.Transparent;
-            btn_avvia.BackgroundImage = Properties.Resources.buttone;
             btn_avvia.BackgroundImageLayout = ImageLayout.Zoom;
             btn_avvia.Cursor = Cursors.Hand;
             btn_avvia.Location = new Point(40, 57);
@@ -75,14 +74,14 @@
             dgv_tempo_temperatura.BorderStyle = BorderStyle.Fixed3D;
             dgv_tempo_temperatura.CellBorderStyle = DataGridViewCellBorderStyle.Sunken;
             dgv_tempo_temperatura.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = SystemColors.Window;
-            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle4.ForeColor = Color.FromArgb(0, 192, 0);
-            dataGridViewCellStyle4.SelectionBackColor = Color.FromArgb(192, 255, 192);
-            dataGridViewCellStyle4.SelectionForeColor = Color.FromArgb(0, 64, 0);
-            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.True;
-            dgv_tempo_temperatura.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = SystemColors.Window;
+            dataGridViewCellStyle5.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle5.ForeColor = Color.FromArgb(0, 192, 0);
+            dataGridViewCellStyle5.SelectionBackColor = Color.FromArgb(192, 255, 192);
+            dataGridViewCellStyle5.SelectionForeColor = Color.FromArgb(0, 64, 0);
+            dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
+            dgv_tempo_temperatura.DefaultCellStyle = dataGridViewCellStyle5;
             dgv_tempo_temperatura.Location = new Point(560, 202);
             dgv_tempo_temperatura.MultiSelect = false;
             dgv_tempo_temperatura.Name = "dgv_tempo_temperatura";
