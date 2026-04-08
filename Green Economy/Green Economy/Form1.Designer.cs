@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             plt_tempo_temperatura = new ScottPlot.WinForms.FormsPlot();
             btn_avvia = new Button();
             dgv_tempo_temperatura = new DataGridView();
@@ -41,6 +41,7 @@
             label5 = new Label();
             btn_rapporto_misure = new Button();
             btn_scelta = new Button();
+            btn_esci = new Button();
             ((System.ComponentModel.ISupportInitialize)dgv_tempo_temperatura).BeginInit();
             SuspendLayout();
             // 
@@ -53,9 +54,11 @@
             // 
             // btn_avvia
             // 
-            btn_avvia.BackColor = Color.Transparent;
+            btn_avvia.BackgroundImage = Properties.Resources.PlayButton;
             btn_avvia.BackgroundImageLayout = ImageLayout.Zoom;
-            btn_avvia.Cursor = Cursors.Hand;
+            btn_avvia.FlatAppearance.BorderSize = 0;
+            btn_avvia.FlatStyle = FlatStyle.Flat;
+            btn_avvia.ForeColor = Color.Transparent;
             btn_avvia.Location = new Point(40, 57);
             btn_avvia.Name = "btn_avvia";
             btn_avvia.Size = new Size(100, 100);
@@ -74,14 +77,14 @@
             dgv_tempo_temperatura.BorderStyle = BorderStyle.Fixed3D;
             dgv_tempo_temperatura.CellBorderStyle = DataGridViewCellBorderStyle.Sunken;
             dgv_tempo_temperatura.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = SystemColors.Window;
-            dataGridViewCellStyle5.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle5.ForeColor = Color.FromArgb(0, 192, 0);
-            dataGridViewCellStyle5.SelectionBackColor = Color.FromArgb(192, 255, 192);
-            dataGridViewCellStyle5.SelectionForeColor = Color.FromArgb(0, 64, 0);
-            dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
-            dgv_tempo_temperatura.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = SystemColors.Window;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(192, 255, 192);
+            dataGridViewCellStyle2.SelectionForeColor = Color.FromArgb(0, 64, 0);
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+            dgv_tempo_temperatura.DefaultCellStyle = dataGridViewCellStyle2;
             dgv_tempo_temperatura.Location = new Point(560, 202);
             dgv_tempo_temperatura.MultiSelect = false;
             dgv_tempo_temperatura.Name = "dgv_tempo_temperatura";
@@ -169,20 +172,38 @@
             // 
             // btn_scelta
             // 
-            btn_scelta.Location = new Point(992, 326);
+            btn_scelta.BackgroundImage = Properties.Resources.SettingsButton;
+            btn_scelta.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_scelta.FlatAppearance.BorderSize = 0;
+            btn_scelta.FlatStyle = FlatStyle.Flat;
+            btn_scelta.Location = new Point(1020, 347);
             btn_scelta.Name = "btn_scelta";
-            btn_scelta.Size = new Size(169, 108);
+            btn_scelta.Size = new Size(80, 80);
             btn_scelta.TabIndex = 11;
-            btn_scelta.Text = "Impostazioni Dati da visualizzare";
             btn_scelta.UseVisualStyleBackColor = true;
             btn_scelta.Click += btn_scelta_Click;
+            // 
+            // btn_esci
+            // 
+            btn_esci.BackgroundImage = Properties.Resources.ExitButton;
+            btn_esci.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_esci.FlatAppearance.BorderSize = 0;
+            btn_esci.FlatStyle = FlatStyle.Flat;
+            btn_esci.Location = new Point(1020, 460);
+            btn_esci.Name = "btn_esci";
+            btn_esci.Size = new Size(80, 80);
+            btn_esci.TabIndex = 12;
+            btn_esci.UseVisualStyleBackColor = true;
+            btn_esci.Click += btn_esci_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(128, 255, 128);
+            BackgroundImageLayout = ImageLayout.None;
             ClientSize = new Size(1320, 659);
+            Controls.Add(btn_esci);
             Controls.Add(btn_scelta);
             Controls.Add(btn_rapporto_misure);
             Controls.Add(label5);
@@ -218,5 +239,6 @@
         private Label label5;
         private Button btn_rapporto_misure;
         private Button btn_scelta;
+        private Button btn_esci;
     }
 }

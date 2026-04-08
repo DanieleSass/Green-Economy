@@ -63,9 +63,9 @@ namespace Green_Economy.Properties {
         /// <summary>
         ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap buttone {
+        internal static System.Drawing.Bitmap ExitButton {
             get {
-                object obj = ResourceManager.GetObject("buttone", resourceCulture);
+                object obj = ResourceManager.GetObject("ExitButton", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace Green_Economy.Properties {
         /// <summary>
         ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap play_button {
+        internal static System.Drawing.Bitmap PlayButton {
             get {
-                object obj = ResourceManager.GetObject("play-button", resourceCulture);
+                object obj = ResourceManager.GetObject("PlayButton", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace Green_Economy.Properties {
         /// <summary>
         ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap play_button_removebg_preview {
+        internal static System.Drawing.Bitmap SettingsButton {
             get {
-                object obj = ResourceManager.GetObject("play-button-removebg-preview", resourceCulture);
+                object obj = ResourceManager.GetObject("SettingsButton", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

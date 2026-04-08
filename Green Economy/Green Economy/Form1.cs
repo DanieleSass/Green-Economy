@@ -152,29 +152,27 @@ namespace Green_Economy
         }
 
         //fare questa funzione asincrona
-        private void AggiornaDati(List<Task> info)
+        private void AggiornaDati(Meteo m, QualitaAria a)
         {
             //qui dentro popolare la lista con i valori presi dall' api
             lista.Clear();
-            Meteo m;
-            QualitaAria a;
-            if (info.Contains(Meteo))
+            if(m==null || a ==null ||m.time==null || a.time == null)
             {
-                m = info.OfType<Meteo>().FirstOrDefault();
+                MessageBox.Show("Dati non disponibili", "Attenzione", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning);
+                return;
             }
-            if (info.Contains(QualitaAria))
-            {
-                a = info.OfType<QualitaAria>().FirstOrDefault();
-            }
+
             int min = Math.Min(m.time.Count, a.time.Count);
             CInfo c;
+            
             for (int i = 0; i < min; i++)
             {
-                if (m.temperature_2m[i] == null)
-                    c = new(DateTime.Parse(m.time[i]), 0, 0);
-                else
-                    c = new(DateTime.Parse(m.time[i]), (float)(m.temperature_2m[i] ?? 0), (float)(a.pm2_5[i]));
-                lista.Add(c);
+                //se anche un solo dato è null allora lo skippa e lo salta
+                if (m.temperature_2m[i] == null || a.pm2_5[i] == null || m.time[i] == null)
+                {
+                    continue;
+                }
+                c = new CInfo(DateTime.Parse(m.time[i]), (float)m.temperature_2m[i].Value, (float)a.pm2_5[i].Value);
             }
             CreaGrafico();
         }
@@ -182,6 +180,10 @@ namespace Green_Economy
         {
             Task<Meteo> tMeteo = null;
             Task<QualitaAria> tAria = null;
+
+            List<Task> tasks = new List<Task>();
+            tasks.Add(tMeteo);
+            tasks.Add(tAria);
 
             if (settings.flags.Contains(DatoDaAnalizzare.Meteo))
             {
@@ -205,16 +207,14 @@ namespace Green_Economy
                 tAria = LeggiDatiAPI<QualitaAria>(urlAria);
             }
 
-            List<Task> tasks = new List<Task>();
-            tasks.Add(tMeteo);
-            tasks.Add(tAria);
+
             await Task.WhenAll(tasks);
 
 
             //letti i dati fare qualcosa, tipo mostrarli, salvarli nella lista, fare controlli null
             //  SE ANCHE SOLO UN DATO è NULL (O TEMP, O INQUIN, O DATA è NULL), SCARATARE INTERA RIGA   
 
-            AggiornaDati(tasks);
+            AggiornaDati(tMeteo.Result, tAria.Result);  //TROVARE ALTERNATIVA A RESULT pk sincrono
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -230,8 +230,13 @@ namespace Green_Economy
 
         //FIXARE ASYNC VOID-->TASK
 
+        
+
         private async Task btn_avvia_Click_1(object sender, EventArgs e)
         {
+
+
+            /*
             try
             {
                 Task<Meteo> taskMeteo = LeggiMeteoDaAPI(7);
@@ -266,6 +271,8 @@ namespace Green_Economy
             {
                 MessageBox.Show("Errore: " + ex.Message);
             }
+
+            */
         }
 
         private void lbl_nomi_Click(object sender, EventArgs e)
@@ -274,6 +281,11 @@ namespace Green_Economy
 
             //da cambiare
             MessageBox.Show("SORPRESA");
+        }
+
+        private void btn_esci_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         private async Task<T> LeggiDatiAPI<T>(string url)
