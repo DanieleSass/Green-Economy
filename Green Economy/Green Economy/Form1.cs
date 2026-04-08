@@ -6,7 +6,7 @@ using System.Configuration;
 namespace Green_Economy
 {
     public partial class Form1 : Form
-    { 
+    {
 
         //API OPEN-METEO = https://open-meteo.com/en/docs
 
@@ -168,7 +168,7 @@ namespace Green_Economy
             }
             int min = Math.Min(m.time.Count, a.time.Count);
             CInfo c;
-            for(int i =0; i < min; i++)
+            for (int i = 0; i < min; i++)
             {
                 if (m.temperature_2m[i] == null)
                     c = new(DateTime.Parse(m.time[i]), 0, 0);
@@ -234,7 +234,7 @@ namespace Green_Economy
         {
             try
             {
-                Task<Meteo> taskMeteo = LeggiMeteoDaAPI(7) ;
+                Task<Meteo> taskMeteo = LeggiMeteoDaAPI(7);
                 Task<QualitaAria> taskAria = LeggiAriaDaAPI(7);
 
                 //aspetta che le finiscano di leggere i dati entrambe
@@ -268,8 +268,13 @@ namespace Green_Economy
             }
         }
 
+        private void lbl_nomi_Click(object sender, EventArgs e)
+        {
+            //easter egg
 
-
+            //da cambiare
+            MessageBox.Show("SORPRESA");
+        }
 
         private async Task<T> LeggiDatiAPI<T>(string url)
         {
