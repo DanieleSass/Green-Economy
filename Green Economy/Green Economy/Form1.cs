@@ -1,8 +1,9 @@
-﻿using Dapper;   //per database
+﻿using System.ComponentModel;
+using System.Configuration;
+using System.Globalization;
+using Dapper;   //per database
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
-using System.ComponentModel;
-using System.Configuration;
 namespace Green_Economy
 {
     public partial class Form1 : Form
@@ -41,7 +42,7 @@ namespace Green_Economy
             LeggiFile();
             dgv_tempo_temperatura.DataSource = lista;   //abbino la lista e le sue info al dgv
             CreaGrafico();
-           CaricaFormImpostazioni(); //carica form impostazioni all' avvio del form principale
+            CaricaFormImpostazioni(); //carica form impostazioni all' avvio del form principale
         }
 
         private void ScriviFile()
@@ -172,7 +173,7 @@ namespace Green_Economy
         {
             //qui dentro popolare la lista con i valori presi dall' api
             lista.Clear();
-            if(m==null || a ==null ||m.time==null || a.time == null)
+            if (m == null || a == null || m.time == null || a.time == null)
             {
                 MessageBox.Show("Dati non disponibili", "Attenzione", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning);
                 return;
@@ -180,7 +181,7 @@ namespace Green_Economy
 
             int min = Math.Min(m.time.Count, a.time.Count);
             CInfo c;
-            
+
             for (int i = 0; i < min; i++)
             {
                 //se anche un solo dato è null allora lo skippa e lo salta
@@ -189,48 +190,52 @@ namespace Green_Economy
                     continue;
                 }
                 c = new CInfo(DateTime.Parse(m.time[i]), (float)m.temperature_2m[i].Value, (float)a.pm2_5[i].Value);
+                lista.Add(c);
             }
             CreaGrafico();
         }
-        private async Task Aggiornamento() //funzione bisello, incaricata da daniele
+        private async Task Aggiornamento()
         {
             Task<Meteo> tMeteo = null;
             Task<QualitaAria> tAria = null;
 
             List<Task> tasks = new List<Task>();
-            tasks.Add(tMeteo);
-            tasks.Add(tAria);
+
 
             if (settings.flags.Contains(DatoDaAnalizzare.Meteo))
             {
+                string lat = settings.citta.Latitudine.ToString(CultureInfo.InvariantCulture);
+                string lon = settings.citta.Longitudine.ToString(CultureInfo.InvariantCulture);
+
+                // Assicurati che settings.giorni sia tra 0 e 92
                 string urlMeteo = $"https://api.open-meteo.com/v1/forecast" +
-                $"?latitude={settings.citta.Latitudine}&longitude={settings.citta.Longitudine}" +
-                $"&hourly=temperature_2m" +
-                $"&timezone=Europe%2FRome" +
-                $"&past_days={settings.giorni}";
+                    $"?latitude={lat}&longitude={lon}" +
+                    $"&hourly=temperature_2m" +
+                    $"&timezone=Europe%2FRome" +
+                    $"&past_days={settings.giorni}";
+
                 tMeteo = LeggiDatiAPI<Meteo>(urlMeteo);
             }
 
-
             if (settings.flags.Contains(DatoDaAnalizzare.Aria))
             {
+                string lat = settings.citta.Latitudine.ToString(CultureInfo.InvariantCulture);
+                string lon = settings.citta.Longitudine.ToString(CultureInfo.InvariantCulture);
+
                 string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality" +
-                $"?latitude={settings.citta.Latitudine} &longitude= {settings.citta.Longitudine}" +
-                $"&hourly=pm2_5" +
-                $"&timezone=Europe%2FRome" +
-                $"&past_days={settings.giorni}";
+                    $"?latitude={lat}&longitude={lon}" +
+                    $"&hourly=pm2_5" +
+                    $"&timezone=Europe%2FRome" +
+                    $"&past_days={settings.giorni}";
 
                 tAria = LeggiDatiAPI<QualitaAria>(urlAria);
             }
 
 
-            await Task.WhenAll(tasks);
-
-
             //letti i dati fare qualcosa, tipo mostrarli, salvarli nella lista, fare controlli null
             //  SE ANCHE SOLO UN DATO è NULL (O TEMP, O INQUIN, O DATA è NULL), SCARATARE INTERA RIGA   
 
-            AggiornaDati(tMeteo.Result, tAria.Result);  //TROVARE ALTERNATIVA A RESULT pk sincrono
+            AggiornaDati(await tMeteo, await tAria);  //TROVARE ALTERNATIVA A RESULT pk sincrono
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -241,55 +246,6 @@ namespace Green_Economy
                 formImpostazioni.Close(); //chiude anche form impostazioni
             }
 
-        }
-
-
-
-        //FIXARE ASYNC VOID-->TASK
-
-        
-
-        private async Task btn_avvia_Click_1(object sender, EventArgs e)
-        {
-
-
-            /*
-            try
-            {
-                Task<Meteo> taskMeteo = LeggiMeteoDaAPI(7);
-                Task<QualitaAria> taskAria = LeggiAriaDaAPI(7);
-
-                //aspetta che le finiscano di leggere i dati entrambe
-                Meteo meteo = await taskMeteo;
-                QualitaAria aria = await taskAria;
-
-                //for (int i = 0; i < 10; i++)
-                lista.Clear();
-                CInfo c;
-
-                //fixare questo, cioè bisogna fare controllo != null dentro for per evitare di perdere dati di uno dei 2
-                int numeroCicli = Math.Min(meteo.time.Count, aria.time.Count); //per evitare errori se i dati hanno lunghezze diverse
-                for (int i = 0; i < numeroCicli; i++)  //mostra tutti i dati raccolti
-                {
-                    if (meteo.temperature_2m[i] == null)
-                        c = new(DateTime.Parse(meteo.time[i]), 0, 0);
-                    else
-                        c = new(DateTime.Parse(meteo.time[i]), (float)(meteo.temperature_2m[i] ?? 0), (float)(aria.pm2_5[i]));
-                    lista.Add(c);
-                }
-                CreaGrafico();
-                //ScriviSuDGV();
-            }
-            catch (HttpRequestException ex)
-            {
-                MessageBox.Show("Errore di rete: " + ex.Message);
-            }
-            catch (Exception ex)//generica
-            {
-                MessageBox.Show("Errore: " + ex.Message);
-            }
-
-            */
         }
 
         private void lbl_nomi_Click(object sender, EventArgs e)
@@ -304,6 +260,11 @@ namespace Green_Economy
         {
             formImpostazioni.Close();
             this.Close();
+        }
+
+        private async void btn_avvia_Click(object sender, EventArgs e)
+        {
+            await Aggiornamento();
         }
 
         private async Task<T> LeggiDatiAPI<T>(string url)
