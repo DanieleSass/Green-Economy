@@ -12,6 +12,9 @@ namespace Green_Economy
 
         BindingList<CInfo> lista;
         Impostazioni settings;
+        FImpostazioni formImpostazioni; //lo creo come variabile di classe
+                                        //così lo posso nascondere e
+                                        //mostrare senza doverlo ricaricare ogni volta
         string path;
         //FAI BEGIN INVOKE PER GESTIRE THREAD UI
         static readonly HttpClient client = new(); //comunica col server, riceve i dati(socket)
@@ -21,12 +24,12 @@ namespace Green_Economy
         {
             InitializeComponent();
             lista = new();
-            path = Path.Combine(Directory.GetCurrentDirectory(), "../../File");
+            path = Path.Combine(Directory.GetCurrentDirectory(), "../../../File");
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
-            path = Path.Combine(Directory.GetCurrentDirectory(), "../../File/dati.json");
+            path = Path.Combine(Directory.GetCurrentDirectory(), "../../../File/dati.json");
             if (!File.Exists(path))
             {
                 File.Create(path).Close(); //cosi il file non risulta utilizzato da un altro processo
@@ -38,6 +41,7 @@ namespace Green_Economy
             LeggiFile();
             dgv_tempo_temperatura.DataSource = lista;   //abbino la lista e le sue info al dgv
             CreaGrafico();
+           CaricaFormImpostazioni(); //carica form impostazioni all' avvio del form principale
         }
 
         private void ScriviFile()
@@ -137,11 +141,23 @@ namespace Green_Economy
 
         private void btn_scelta_Click(object sender, EventArgs e)
         {
+            /*
             using (FImpostazioni form = new FImpostazioni())
             {
                 form.SalvaImpostazioni += OnSalvaImpostazioni;
                 form.ShowDialog();
             }
+            */
+            formImpostazioni.ShowDialog();
+        }
+
+        private void CaricaFormImpostazioni()
+        {
+            //lo carica all' avvio del form prinicipale e non lo chiude mai ma semplicemente lo nascone
+            //in modo tale da non dover ricaricare tutto il file json ogni volta
+            formImpostazioni = new FImpostazioni();
+            formImpostazioni.SalvaImpostazioni += OnSalvaImpostazioni;
+
         }
 
         private async void OnSalvaImpostazioni(object sender, ImpostazioniEventArgs e)
@@ -222,6 +238,7 @@ namespace Green_Economy
             if (risposta == DialogResult.Yes)
             {
                 ScriviFile();
+                formImpostazioni.Close(); //chiude anche form impostazioni
             }
 
         }
@@ -285,6 +302,7 @@ namespace Green_Economy
 
         private void btn_esci_Click(object sender, EventArgs e)
         {
+            formImpostazioni.Close();
             this.Close();
         }
 

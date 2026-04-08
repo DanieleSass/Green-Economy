@@ -42,6 +42,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(192, 255, 192);
             ClientSize = new Size(800, 450);
             Controls.Add(plt_rapporto);
             Name = "FRelazioneDati";

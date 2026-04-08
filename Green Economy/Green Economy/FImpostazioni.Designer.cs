@@ -86,7 +86,7 @@
             // 
             // btn_salva
             // 
-            btn_salva.BackColor = Color.FromArgb(192, 255, 192);
+            btn_salva.BackColor = Color.FromArgb(128, 255, 128);
             btn_salva.Location = new Point(569, 161);
             btn_salva.Name = "btn_salva";
             btn_salva.Size = new Size(198, 60);
@@ -110,6 +110,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(192, 255, 192);
             ClientSize = new Size(800, 450);
             Controls.Add(btn_annulla);
             Controls.Add(btn_salva);

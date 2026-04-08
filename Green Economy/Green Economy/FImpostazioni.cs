@@ -23,11 +23,6 @@ namespace Green_Economy
         public FImpostazioni()
         {
             InitializeComponent();
-        }
-
-        private void FImpostazioni_Load(object sender, EventArgs e)
-        {
-
             //popola checkbox list
             foreach (DatoDaAnalizzare valore in Enum.GetValues(typeof(DatoDaAnalizzare)))
             {
@@ -36,11 +31,16 @@ namespace Green_Economy
             LeggiCittà();
         }
 
+        private void FImpostazioni_Load(object sender, EventArgs e)
+        {
+
+        }
+
         private void LeggiCittà() //legge da file json
         {
             try
             {
-                string path = Path.Combine(Directory.GetCurrentDirectory(), "../../File/comuni.json");
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "../../../File/comuni.json");
                 string txt = File.ReadAllText(path);
                 var lista = JsonConvert.DeserializeObject<List<Città>>(txt);
                 foreach (Città c in lista)
@@ -58,7 +58,8 @@ namespace Green_Economy
 
         private void btn_annulla_Click(object sender, EventArgs e)
         {
-            this.Close();
+            //this.Close();
+            Hide();
         }
 
         private void btn_salva_Click(object sender, EventArgs e)
@@ -85,7 +86,8 @@ namespace Green_Economy
 
             Impostazioni impo = new(giorni,citta,flagRichiesti);
             SalvaImpostazioni?.Invoke(this, new ImpostazioniEventArgs(impo));
-            this.Close();
+            //this.Close();
+            Hide();
         }
     }
 
