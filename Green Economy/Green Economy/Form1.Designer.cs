@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             plt_tempo_temperatura = new ScottPlot.WinForms.FormsPlot();
             btn_avvia = new Button();
             dgv_tempo_temperatura = new DataGridView();
@@ -36,8 +36,6 @@
             lbl_nomi = new Label();
             label1 = new Label();
             label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
             label5 = new Label();
             btn_rapporto_misure = new Button();
             btn_scelta = new Button();
@@ -49,7 +47,7 @@
             // 
             plt_tempo_temperatura.Location = new Point(27, 202);
             plt_tempo_temperatura.Name = "plt_tempo_temperatura";
-            plt_tempo_temperatura.Size = new Size(516, 338);
+            plt_tempo_temperatura.Size = new Size(572, 338);
             plt_tempo_temperatura.TabIndex = 0;
             // 
             // btn_avvia
@@ -59,9 +57,9 @@
             btn_avvia.FlatAppearance.BorderSize = 0;
             btn_avvia.FlatStyle = FlatStyle.Flat;
             btn_avvia.ForeColor = Color.Transparent;
-            btn_avvia.Location = new Point(40, 57);
+            btn_avvia.Location = new Point(12, 26);
             btn_avvia.Name = "btn_avvia";
-            btn_avvia.Size = new Size(100, 100);
+            btn_avvia.Size = new Size(81, 65);
             btn_avvia.TabIndex = 1;
             btn_avvia.UseVisualStyleBackColor = false;
             btn_avvia.Click += btn_avvia_Click;
@@ -78,38 +76,38 @@
             dgv_tempo_temperatura.BorderStyle = BorderStyle.Fixed3D;
             dgv_tempo_temperatura.CellBorderStyle = DataGridViewCellBorderStyle.Sunken;
             dgv_tempo_temperatura.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = SystemColors.Window;
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle1.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(192, 255, 192);
-            dataGridViewCellStyle1.SelectionForeColor = Color.FromArgb(0, 64, 0);
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgv_tempo_temperatura.DefaultCellStyle = dataGridViewCellStyle1;
-            dgv_tempo_temperatura.Location = new Point(560, 202);
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = SystemColors.Window;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(192, 255, 192);
+            dataGridViewCellStyle2.SelectionForeColor = Color.FromArgb(0, 64, 0);
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+            dgv_tempo_temperatura.DefaultCellStyle = dataGridViewCellStyle2;
+            dgv_tempo_temperatura.Location = new Point(643, 202);
             dgv_tempo_temperatura.MultiSelect = false;
             dgv_tempo_temperatura.Name = "dgv_tempo_temperatura";
             dgv_tempo_temperatura.ReadOnly = true;
             dgv_tempo_temperatura.RowHeadersVisible = false;
             dgv_tempo_temperatura.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             dgv_tempo_temperatura.ScrollBars = ScrollBars.Vertical;
-            dgv_tempo_temperatura.Size = new Size(421, 338);
+            dgv_tempo_temperatura.Size = new Size(520, 338);
             dgv_tempo_temperatura.TabIndex = 2;
             // 
             // lbl_titolo
             // 
             lbl_titolo.AutoSize = true;
-            lbl_titolo.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lbl_titolo.Location = new Point(452, 32);
+            lbl_titolo.Font = new Font("Verdana", 28.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lbl_titolo.Location = new Point(365, 16);
             lbl_titolo.Name = "lbl_titolo";
-            lbl_titolo.Size = new Size(275, 41);
+            lbl_titolo.Size = new Size(486, 57);
             lbl_titolo.TabIndex = 3;
             lbl_titolo.Text = "GREEN ECONOMY";
             // 
             // lbl_nomi
             // 
             lbl_nomi.AutoSize = true;
-            lbl_nomi.Location = new Point(862, 589);
+            lbl_nomi.Location = new Point(899, 627);
             lbl_nomi.Name = "lbl_nomi";
             lbl_nomi.Size = new Size(283, 20);
             lbl_nomi.TabIndex = 4;
@@ -119,7 +117,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(285, 73);
+            label1.Location = new Point(224, 73);
             label1.Name = "label1";
             label1.Size = new Size(815, 20);
             label1.TabIndex = 5;
@@ -128,29 +126,11 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(224, 93);
+            label2.Location = new Point(178, 111);
             label2.Name = "label2";
             label2.Size = new Size(876, 20);
             label2.TabIndex = 6;
             label2.Text = "si può fare altro form con altro grafico per questo (dovrebbe essere tipo y=mx), oppure fare calcoli basati su medie giornaliere ecc";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(247, 121);
-            label3.Name = "label3";
-            label3.Size = new Size(163, 20);
-            label3.TabIndex = 7;
-            label3.Text = "mettere unità di misura";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(452, 153);
-            label4.Name = "label4";
-            label4.Size = new Size(603, 20);
-            label4.TabIndex = 8;
-            label4.Text = "fare in modo che si possa devidere quale citta analizzare, con quanti giorni di analisi ecc...";
             // 
             // label5
             // 
@@ -163,11 +143,11 @@
             // 
             // btn_rapporto_misure
             // 
-            btn_rapporto_misure.Location = new Point(987, 202);
+            btn_rapporto_misure.Location = new Point(508, 569);
             btn_rapporto_misure.Name = "btn_rapporto_misure";
-            btn_rapporto_misure.Size = new Size(174, 104);
+            btn_rapporto_misure.Size = new Size(157, 85);
             btn_rapporto_misure.TabIndex = 10;
-            btn_rapporto_misure.Text = "Visualizza il rapporto grafico tra inquinamento e temperatura";
+            btn_rapporto_misure.Text = "rapporto";
             btn_rapporto_misure.UseVisualStyleBackColor = true;
             btn_rapporto_misure.Click += btn_rapporto_misure_Click;
             // 
@@ -177,9 +157,9 @@
             btn_scelta.BackgroundImageLayout = ImageLayout.Zoom;
             btn_scelta.FlatAppearance.BorderSize = 0;
             btn_scelta.FlatStyle = FlatStyle.Flat;
-            btn_scelta.Location = new Point(1020, 347);
+            btn_scelta.Location = new Point(1121, 22);
             btn_scelta.Name = "btn_scelta";
-            btn_scelta.Size = new Size(80, 80);
+            btn_scelta.Size = new Size(61, 69);
             btn_scelta.TabIndex = 11;
             btn_scelta.UseVisualStyleBackColor = true;
             btn_scelta.Click += btn_scelta_Click;
@@ -190,9 +170,9 @@
             btn_esci.BackgroundImageLayout = ImageLayout.Zoom;
             btn_esci.FlatAppearance.BorderSize = 0;
             btn_esci.FlatStyle = FlatStyle.Flat;
-            btn_esci.Location = new Point(1020, 460);
+            btn_esci.Location = new Point(27, 590);
             btn_esci.Name = "btn_esci";
-            btn_esci.Size = new Size(80, 80);
+            btn_esci.Size = new Size(66, 57);
             btn_esci.TabIndex = 12;
             btn_esci.UseVisualStyleBackColor = true;
             btn_esci.Click += btn_esci_Click;
@@ -201,15 +181,13 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(128, 255, 128);
+            BackColor = Color.LawnGreen;
             BackgroundImageLayout = ImageLayout.None;
-            ClientSize = new Size(1320, 659);
+            ClientSize = new Size(1196, 659);
             Controls.Add(btn_esci);
             Controls.Add(btn_scelta);
             Controls.Add(btn_rapporto_misure);
             Controls.Add(label5);
-            Controls.Add(label4);
-            Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(lbl_nomi);
@@ -235,8 +213,6 @@
         private Label lbl_nomi;
         private Label label1;
         private Label label2;
-        private Label label3;
-        private Label label4;
         private Label label5;
         private Button btn_rapporto_misure;
         private Button btn_scelta;
