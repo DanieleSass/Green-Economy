@@ -1,0 +1,13 @@
+{
+  "giorni": 3,
+  "citta": {
+    "denominazione_ita": "Acqualagna",
+    "sigla_provincia": "PU",
+    "lat": 43.6166773,
+    "lon": 12.6704445
+  },
+  "flags": [
+    0,
+    1
+  ]
+}

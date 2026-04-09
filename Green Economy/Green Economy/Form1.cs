@@ -1,9 +1,6 @@
-﻿using System.ComponentModel;
-using System.Configuration;
+﻿using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Globalization;
-using Dapper;   //per database
-using Microsoft.Data.Sqlite;
-using Newtonsoft.Json;
 namespace Green_Economy
 {
     public partial class Form1 : Form
@@ -39,7 +36,7 @@ namespace Green_Economy
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            DialogResult risposta= MessageBox.Show("Caricare ultimi dati salvati dal file?", "Caricamento Dati", MessageBoxButtons.YesNo);
+            DialogResult risposta = MessageBox.Show("Caricare ultimi dati salvati dal file?", "Caricamento Dati", MessageBoxButtons.YesNo);
             if (risposta == DialogResult.Yes)
                 LeggiFile();
 
@@ -168,6 +165,37 @@ namespace Green_Economy
                 ScriviFile();
                 formImpostazioni.Close(); //chiude anche form impostazioni
             }
+            SalvaImpostazioniSuFile();  //così quando si riapre ci si ritrova le informazioni dell' ultima volta
+
+        }
+
+        private void SalvaImpostazioniSuFile()
+        {
+            string pathImp;
+            try
+            {
+                pathImp = Path.Combine(Directory.GetCurrentDirectory(), "../../../File/Impostazioni.json");
+                if (!File.Exists(pathImp))
+                {
+                    File.Create(pathImp).Close(); //cosi il file non risulta utilizzato da un altro processo
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Errore nel trovare il file");
+                return;
+            }
+
+            try
+            {
+                string txt = JsonConvert.SerializeObject(settings, Formatting.Indented);
+                File.WriteAllText(pathImp, txt);
+                return;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Errore nella lettura del file");
+            }
 
         }
 
@@ -177,7 +205,20 @@ namespace Green_Economy
             //in modo tale da non dover ricaricare tutto il file json ogni volta
             formImpostazioni = new FImpostazioni();
             formImpostazioni.SalvaImpostazioni += OnSalvaImpostazioni;
-
+            try
+            {
+                string pathImp = Path.Combine(Directory.GetCurrentDirectory(), "../../../File/Impostazioni.json");
+                if (File.Exists(pathImp))
+                {
+                    string txt = File.ReadAllText(pathImp);
+                    this.settings = JsonConvert.DeserializeObject<Impostazioni>(txt);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Errore caricamento imposazioni");  
+            }
+            formImpostazioni.AggiornaGraficaControlli(this.settings);
         }
 
         private async Task OnSalvaImpostazioni(object sender, ImpostazioniEventArgs e)
@@ -236,17 +277,24 @@ namespace Green_Economy
             }
 
 
-            Meteo m=null;
-            QualitaAria a=null;
+            Meteo m = null;
+            QualitaAria a = null;
             if (tMeteo != null)
-                m=await tMeteo;
+                m = await tMeteo;
 
             if (tAria != null)
-                a=await tAria;
+                a = await tAria;
 
             AggiornaDati(m, a);
         }
 
+        private void btn_info_Click(object sender, EventArgs e)
+        {
+            using (FGuida form = new FGuida())
+            {
+                form.ShowDialog();
+            }
+        }
 
         private async Task<T> LeggiDatiAPI<T>(string url)
         {

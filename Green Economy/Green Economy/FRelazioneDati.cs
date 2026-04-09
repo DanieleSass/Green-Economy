@@ -23,7 +23,7 @@ namespace Green_Economy
         {
             dgv_dati.Columns.Add("temp", "Temperatura");
             dgv_dati.Columns.Add("inqu", "Inquinamento");
-            dgv_dati.AutoSizeColumnsMode=DataGridViewAutoSizeColumnsMode.Fill;
+            dgv_dati.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             List<string> etichette = new List<string> { "Media", "Moda", "Mediana", "Varianza" };
 
             dgv_dati.RowCount = etichette.Count;
@@ -96,22 +96,24 @@ namespace Green_Economy
         private double Mediana(List<double> lista)
         {
             var nuova = lista.OrderBy(n => n).ToList();
-            if(nuova.Count % 2 == 0)
+            if (nuova.Count % 2 == 0)
             {
-                return (nuova[nuova.Count / 2 - 1] + nuova[nuova.Count / 2]) / 2; 
+                return (nuova[nuova.Count / 2 - 1] + nuova[nuova.Count / 2]) / 2;
             }
             else
             {
                 return nuova[nuova.Count / 2];
             }
         }
+
         private double Moda(List<double> lista)
         {
             double numero;
-            int frequenza=0;
 
-            int frequenza_ultima=0;
-            double moda=0;
+            int frequenza = 0;
+
+            int frequenza_ultima = 0;
+            double moda = 0;
 
             for (int i = 0; i < lista.Count; i++)
             {
@@ -124,8 +126,8 @@ namespace Green_Economy
                         frequenza++;
                     }
                 }
-                
-                if(frequenza>= frequenza_ultima)
+
+                if (frequenza >= frequenza_ultima)
                 {
                     moda = numero;
                     frequenza_ultima = frequenza;
@@ -137,10 +139,10 @@ namespace Green_Economy
         {
             double media = lista.Average();
             int c = lista.Count;
-            double somma=0;
-            foreach(var n in lista)
+            double somma = 0;
+            foreach (var n in lista)
             {
-                somma+=Math.Pow(n - media,2);
+                somma += Math.Pow(n - media, 2);
             }
             return somma / c;
         }
