@@ -39,7 +39,10 @@ namespace Green_Economy
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            LeggiFile();
+            DialogResult risposta= MessageBox.Show("Caricare ultimi dati salvati dal file?", "Caricamento Dati", MessageBoxButtons.YesNo);
+            if (risposta == DialogResult.Yes)
+                LeggiFile();
+
             dgv_tempo_temperatura.DataSource = lista;   //abbino la lista e le sue info al dgv
             CreaGrafico();
             CaricaFormImpostazioni(); //carica form impostazioni all' avvio del form principale
@@ -47,8 +50,6 @@ namespace Green_Economy
 
         private void ScriviFile()
         {
-
-            //fare controllo se esiste cartella e file, altrimenti crearli
 
             try
             {
@@ -62,7 +63,6 @@ namespace Green_Economy
         }
         private void LeggiFile()
         {
-            //fare controllo se esiste cartella e file, altrimenti crearli
             try
             {
                 string txt = File.ReadAllText(path);
@@ -122,16 +122,6 @@ namespace Green_Economy
             plt_tempo_temperatura.Refresh();    //aggiorna graficamente(ridondante, per sicurezza)
         }
 
-        private void ScriviSuDGV()
-        {
-            //oppure fare inserimento manuale riga per riga
-
-            //scolleghi la lista
-            dgv_tempo_temperatura.DataSource = null;
-            //la ricolleghi così dgv è costretto a rileggere tutto
-            dgv_tempo_temperatura.DataSource = lista;
-        }
-
         private void btn_rapporto_misure_Click(object sender, EventArgs e)
         {
             using (FRelazioneDati form = new FRelazioneDati(lista))
@@ -139,7 +129,6 @@ namespace Green_Economy
                 form.ShowDialog();
             }
         }
-
         private void btn_scelta_Click(object sender, EventArgs e)
         {
             /*
@@ -152,6 +141,36 @@ namespace Green_Economy
             formImpostazioni.ShowDialog();
         }
 
+        private void btn_esci_Click(object sender, EventArgs e)
+        {
+            formImpostazioni.Close();
+            this.Close();
+        }
+
+        private async void btn_avvia_Click(object sender, EventArgs e)
+        {
+            await Aggiornamento();
+        }
+
+        private void lbl_nomi_Click(object sender, EventArgs e)
+        {
+            //easter egg
+
+            //da cambiare
+            MessageBox.Show("SORPRESA");
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult risposta = MessageBox.Show("Salvare gli ultimi dati scaricati in un file?", "Salvataggio Dati", MessageBoxButtons.YesNo);
+            if (risposta == DialogResult.Yes)
+            {
+                ScriviFile();
+                formImpostazioni.Close(); //chiude anche form impostazioni
+            }
+
+        }
+
         private void CaricaFormImpostazioni()
         {
             //lo carica all' avvio del form prinicipale e non lo chiude mai ma semplicemente lo nascone
@@ -161,19 +180,20 @@ namespace Green_Economy
 
         }
 
-        private async void OnSalvaImpostazioni(object sender, ImpostazioniEventArgs e)
+        private async Task OnSalvaImpostazioni(object sender, ImpostazioniEventArgs e)
         {
             Impostazioni imp = e.impostazioni;
             settings = imp;
-            Aggiornamento();
+            await Aggiornamento();
         }
 
-        //fare questa funzione asincrona
-        private void AggiornaDati(Meteo m, QualitaAria a)
+        //fare questa funzione asincrona METTERE ASYNC SE SERVE ALTRIMENTI TOGLIERE
+        //TUTTO IL ASYNC AWAIT TASK DAPPERTUTTO PK NON SERVIREBBE PIU' A NIENTE
+        private async Task AggiornaDati(Meteo m, QualitaAria a)
         {
             //qui dentro popolare la lista con i valori presi dall' api
             lista.Clear();
-            if (m == null || a == null || m.time == null || a.time == null)
+            if ((m == null && a == null) || (m.time == null && a.time == null))
             {
                 MessageBox.Show("Dati non disponibili", "Attenzione", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning);
                 return;
@@ -194,78 +214,39 @@ namespace Green_Economy
             }
             CreaGrafico();
         }
+
         private async Task Aggiornamento()
         {
             Task<Meteo> tMeteo = null;
             Task<QualitaAria> tAria = null;
 
-            List<Task> tasks = new List<Task>();
-
+            string lat = settings.citta.Latitudine.ToString(CultureInfo.InvariantCulture);
+            string lon = settings.citta.Longitudine.ToString(CultureInfo.InvariantCulture);
 
             if (settings.flags.Contains(DatoDaAnalizzare.Meteo))
             {
-                string lat = settings.citta.Latitudine.ToString(CultureInfo.InvariantCulture);
-                string lon = settings.citta.Longitudine.ToString(CultureInfo.InvariantCulture);
-
-                // Assicurati che settings.giorni sia tra 0 e 92
-                string urlMeteo = $"https://api.open-meteo.com/v1/forecast" +
-                    $"?latitude={lat}&longitude={lon}" +
-                    $"&hourly=temperature_2m" +
-                    $"&timezone=Europe%2FRome" +
-                    $"&past_days={settings.giorni}";
-
+                string urlMeteo = $"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m&timezone=Europe%2FRome&past_days={settings.giorni}";
                 tMeteo = LeggiDatiAPI<Meteo>(urlMeteo);
             }
 
             if (settings.flags.Contains(DatoDaAnalizzare.Aria))
             {
-                string lat = settings.citta.Latitudine.ToString(CultureInfo.InvariantCulture);
-                string lon = settings.citta.Longitudine.ToString(CultureInfo.InvariantCulture);
-
-                string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality" +
-                    $"?latitude={lat}&longitude={lon}" +
-                    $"&hourly=pm2_5" +
-                    $"&timezone=Europe%2FRome" +
-                    $"&past_days={settings.giorni}";
-
+                string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lon}&hourly=pm2_5&timezone=Europe%2FRome&past_days={settings.giorni}";
                 tAria = LeggiDatiAPI<QualitaAria>(urlAria);
             }
 
 
-            //letti i dati fare qualcosa, tipo mostrarli, salvarli nella lista, fare controlli null
-            //  SE ANCHE SOLO UN DATO è NULL (O TEMP, O INQUIN, O DATA è NULL), SCARATARE INTERA RIGA   
+            Meteo m=null;
+            QualitaAria a=null;
+            if (tMeteo != null)
+                m=await tMeteo;
 
-            AggiornaDati(await tMeteo, await tAria);  //TROVARE ALTERNATIVA A RESULT pk sincrono
-        }
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            DialogResult risposta = MessageBox.Show("Salvare gli ultimi dati scaricati in un file?", "Salvataggio Dati", MessageBoxButtons.YesNo);
-            if (risposta == DialogResult.Yes)
-            {
-                ScriviFile();
-                formImpostazioni.Close(); //chiude anche form impostazioni
-            }
+            if (tAria != null)
+                a=await tAria;
 
+            AggiornaDati(m, a);
         }
 
-        private void lbl_nomi_Click(object sender, EventArgs e)
-        {
-            //easter egg
-
-            //da cambiare
-            MessageBox.Show("SORPRESA");
-        }
-
-        private void btn_esci_Click(object sender, EventArgs e)
-        {
-            formImpostazioni.Close();
-            this.Close();
-        }
-
-        private async void btn_avvia_Click(object sender, EventArgs e)
-        {
-            await Aggiornamento();
-        }
 
         private async Task<T> LeggiDatiAPI<T>(string url)
         {

@@ -29,30 +29,47 @@
         private void InitializeComponent()
         {
             plt_rapporto = new ScottPlot.WinForms.FormsPlot();
+            dgv_dati = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dgv_dati).BeginInit();
             SuspendLayout();
             // 
             // plt_rapporto
             // 
-            plt_rapporto.Location = new Point(165, 78);
+            plt_rapporto.Location = new Point(12, 12);
             plt_rapporto.Name = "plt_rapporto";
             plt_rapporto.Size = new Size(562, 317);
             plt_rapporto.TabIndex = 0;
+            // 
+            // dgv_dati
+            // 
+            dgv_dati.AllowUserToAddRows = false;
+            dgv_dati.AllowUserToDeleteRows = false;
+            dgv_dati.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgv_dati.Location = new Point(618, 91);
+            dgv_dati.Name = "dgv_dati";
+            dgv_dati.ReadOnly = true;
+            dgv_dati.RowHeadersWidth = 51;
+            dgv_dati.Size = new Size(422, 238);
+            dgv_dati.TabIndex = 1;
             // 
             // FRelazioneDati
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(192, 255, 192);
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1126, 552);
+            Controls.Add(dgv_dati);
             Controls.Add(plt_rapporto);
             Name = "FRelazioneDati";
             Text = "FRelazioneDati";
             Load += FRelazioneDati_Load;
+            ((System.ComponentModel.ISupportInitialize)dgv_dati).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
         private ScottPlot.WinForms.FormsPlot plt_rapporto;
+        private DataGridView dgv_dati;
     }
 }

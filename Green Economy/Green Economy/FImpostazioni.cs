@@ -14,7 +14,8 @@ namespace Green_Economy
 {
     public partial class FImpostazioni : Form
     {
-        public event EventHandler<ImpostazioniEventArgs> SalvaImpostazioni;
+        public delegate Task AsyncImpostazioniHandler(object sender, ImpostazioniEventArgs e);
+        public event AsyncImpostazioniHandler SalvaImpostazioni;
 
         static readonly HttpClient client = new(); //comunica col server, riceve i dati(socket)
         //classe per fare richiesta http, statico così esiste una sola istanza condivisa
@@ -51,9 +52,7 @@ namespace Green_Economy
             catch (Exception ex)
             {
                 MessageBox.Show("Errore: " + ex.Message);
-            }
-
-            
+            }          
         }
 
         private void btn_annulla_Click(object sender, EventArgs e)
@@ -62,11 +61,8 @@ namespace Green_Economy
             Hide();
         }
 
-        private void btn_salva_Click(object sender, EventArgs e)
+        private async void btn_salva_Click(object sender, EventArgs e)
         {
-
-            //FARE CONTROLLO VALIDITà INPUT
-
             List<DatoDaAnalizzare> flagRichiesti = new();
 
             //scorre tutti gli elementi selezionati
@@ -83,9 +79,20 @@ namespace Green_Economy
                 MessageBox.Show("Seleziona una città");
                 return;
             }
-
+            if (flagRichiesti.Count() == 0)
+            {
+                MessageBox.Show("Seleziona almeno un dato da analizzare");
+                return;
+            }
+            if(giorni <= 0 || giorni >100)
+            {
+                MessageBox.Show("Inserisci un numero di giorni da analizzare valido");
+                return;
+            }
             Impostazioni impo = new(giorni,citta,flagRichiesti);
-            SalvaImpostazioni?.Invoke(this, new ImpostazioniEventArgs(impo));
+
+            //così form non scompare subito e aspetta che evento finisca nell' altro form, quindi che carichi graficamente
+            await SalvaImpostazioni?.Invoke(this, new ImpostazioniEventArgs(impo));
             //this.Close();
             Hide();
         }
@@ -128,6 +135,7 @@ namespace Green_Economy
 
     public class ImpostazioniEventArgs : EventArgs
     {
+
         public Impostazioni impostazioni{ get; set; }
         public ImpostazioniEventArgs(Impostazioni impostazioni)
         {
