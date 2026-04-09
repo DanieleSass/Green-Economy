@@ -28,46 +28,60 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FGuida));
+            lbl_text = new Label();
             btn_esci = new Button();
+            lbl_title = new Label();
             SuspendLayout();
             // 
-            // label1
+            // lbl_text
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(271, 133);
-            label1.Name = "label1";
-            label1.Size = new Size(278, 20);
-            label1.TabIndex = 0;
-            label1.Text = "mettere guida o docimentazione tecnica";
+            lbl_text.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lbl_text.Location = new Point(168, 87);
+            lbl_text.Name = "lbl_text";
+            lbl_text.Size = new Size(567, 472);
+            lbl_text.TabIndex = 0;
+            lbl_text.Text = resources.GetString("lbl_text.Text");
             // 
             // btn_esci
             // 
-            btn_esci.Location = new Point(560, 280);
+            btn_esci.BackColor = Color.FromArgb(255, 128, 128);
+            btn_esci.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btn_esci.Location = new Point(808, 12);
             btn_esci.Name = "btn_esci";
-            btn_esci.Size = new Size(171, 97);
+            btn_esci.Size = new Size(69, 45);
             btn_esci.TabIndex = 1;
             btn_esci.Text = "Esci";
-            btn_esci.UseVisualStyleBackColor = true;
+            btn_esci.UseVisualStyleBackColor = false;
             btn_esci.Click += btn_esci_Click;
+            // 
+            // lbl_title
+            // 
+            lbl_title.Font = new Font("Segoe UI", 22.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lbl_title.Location = new Point(308, 9);
+            lbl_title.Name = "lbl_title";
+            lbl_title.Size = new Size(333, 56);
+            lbl_title.TabIndex = 2;
+            lbl_title.Text = "INFORMAZIONI";
             // 
             // FGuida
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Lime;
-            ClientSize = new Size(800, 450);
+            BackColor = Color.LawnGreen;
+            ClientSize = new Size(889, 580);
+            Controls.Add(lbl_title);
             Controls.Add(btn_esci);
-            Controls.Add(label1);
+            Controls.Add(lbl_text);
             Name = "FGuida";
             Text = "FGuida";
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private Label label1;
+        private Label lbl_text;
         private Button btn_esci;
+        private Label lbl_title;
     }
 }

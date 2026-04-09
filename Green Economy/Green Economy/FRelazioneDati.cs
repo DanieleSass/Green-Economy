@@ -24,6 +24,7 @@ namespace Green_Economy
             dgv_dati.Columns.Add("temp", "Temperatura");
             dgv_dati.Columns.Add("inqu", "Inquinamento");
             dgv_dati.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgv_dati.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             List<string> etichette = new List<string> { "Media", "Moda", "Mediana", "Varianza" };
 
             dgv_dati.RowCount = etichette.Count;
@@ -43,18 +44,20 @@ namespace Green_Economy
 
             //pulisce grafico precedente
             plt_rapporto.Plot.Clear();
+            double[] date = new double[dati.Count];
             double[] temp = new double[dati.Count];
             double[] inqu = new double[dati.Count];
+            double[] rapporti= new double[dati.Count];
             for (int i = 0; i < dati.Count; i++)
             {
+                date[i] = dati[i].Data.ToOADate(); //converte datetime in double
                 temp[i] = dati[i].Temperatura;
                 inqu[i] = dati[i].Inquinamento;
+                rapporti[i] = (temp[i] + inqu[i]) / 2;  //rapporto tra inquinamento e temperatura
             }
 
-            var graficoRapporto = plt_rapporto.Plot.Add.Scatter(temp, inqu);
+            var graficoRapporto = plt_rapporto.Plot.Add.Scatter(date, rapporti);
             graficoRapporto.LegendText = "Rapporto Temperatura-Inquinamento";
-            graficoRapporto.Smooth = true;     //collega i punti con una linea curva (effetto scala logaritmica)
-            graficoRapporto.SmoothTension = 0.5; //regola la tensione della curva (0-1) = più basso più curva, più alto più lineare
             graficoRapporto.Color = ScottPlot.Colors.Green;
 
             plt_rapporto.Plot.ShowLegend(); //mostra legenda (già di default)
@@ -90,8 +93,8 @@ namespace Green_Economy
             dgv_dati.Rows[2].Cells["inqu"].Value = Mediana(inqu).ToString("F2");
 
             //varianza
-            //dgv_dati.Rows[3].Cells["temp"].Value = CalcolaVarianza(temperature).ToString("F2");
-            //dgv_dati.Rows[3].Cells["inqu"].Value = CalcolaVarianza(inquinamento).ToString("F2");
+            dgv_dati.Rows[3].Cells["temp"].Value = Varianza(temp).ToString("F2");
+            dgv_dati.Rows[3].Cells["inqu"].Value = Varianza(inqu).ToString("F2");
         }
         private double Mediana(List<double> lista)
         {

@@ -34,15 +34,12 @@ namespace Green_Economy
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
-            DialogResult risposta = MessageBox.Show("Caricare ultimi dati salvati dal file?", "Caricamento Dati", MessageBoxButtons.YesNo);
-            if (risposta == DialogResult.Yes)
-                LeggiFile();
-
-            dgv_tempo_temperatura.DataSource = lista;   //abbino la lista e le sue info al dgv
-            CreaGrafico();
+            LeggiFile();
             CaricaFormImpostazioni(); //carica form impostazioni all' avvio del form principale
+            await Aggiornamento();
+            dgv_tempo_temperatura.DataSource = lista;   //abbino la lista e le sue info al dgv        
         }
 
         private void ScriviFile()
@@ -151,10 +148,6 @@ namespace Green_Economy
 
         private void lbl_nomi_Click(object sender, EventArgs e)
         {
-            //easter egg
-
-            //da cambiare
-            MessageBox.Show("SORPRESA");
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -234,28 +227,94 @@ namespace Green_Economy
         {
             //qui dentro popolare la lista con i valori presi dall' api
             lista.Clear();
-            if ((m == null && a == null) || (m.time == null && a.time == null))
+            if ((m == null && a == null) || (m?.time == null && a?.time == null))
             {
                 MessageBox.Show("Dati non disponibili", "Attenzione", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning);
                 return;
             }
+            int countMeteo = m?.time?.Count ?? 0;  //setta il count a 0 se è null
+            int countAria = a?.time?.Count ?? 0;
+            int max = Math.Max(countMeteo,countAria);
+   
 
-            int min = Math.Min(m.time.Count, a.time.Count);
-            CInfo c;
+            DateTime data = DateTime.Now;  //non prenderà mai il valore di datetime .now serve solo per settarla inzialmente
+            float temp = 0;
+            float inq = 0;
 
-            for (int i = 0; i < min; i++)
+            for (int i = 0; i < max; i++)
             {
-                //se anche un solo dato è null allora lo skippa e lo salta
-                if (m.temperature_2m[i] == null || a.pm2_5[i] == null || m.time[i] == null)
+
+                if (m != null)
                 {
-                    continue;
+                    data = DateTime.Parse(m.time[i]);
+                    temp = (float)m.temperature_2m[i].Value;
                 }
-                c = new CInfo(DateTime.Parse(m.time[i]), (float)m.temperature_2m[i].Value, (float)a.pm2_5[i].Value);
-                lista.Add(c);
+                else 
+                {
+                    // Se non c'è il meteo, prendiamo la data dalla qualità dell'aria
+                    data = DateTime.Parse(a.time[i]);
+                    
+                }
+                if (a != null)
+                    inq = (float)a.pm2_5[i].Value;
+
+
+                lista.Add(new CInfo(data, temp, inq));
             }
             CreaGrafico();
         }
+        
+        /*private async Task AggiornaDati(Meteo m, QualitaAria a)
+        {
+            lista.Clear();
 
+            // Se entrambi sono null, non c'è nulla da fare
+            if (m == null && a == null)
+            {
+                MessageBox.Show("Dati non disponibili", "Attenzione", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            // operatore ?. per evitare crash se uno dei due è null
+            int countMeteo = m?.time?.Count ?? 0; //?? significa se è null allora metti a 0
+            int countAria = a?.time?.Count ?? 0;
+            int maxIterazioni = Math.Max(countMeteo, countAria);
+
+            if (maxIterazioni == 0) return;
+
+            DateTime data;
+            float temp = 0;
+            float inq = 0;
+
+            for (int i = 0; i < maxIterazioni; i++)
+            {
+   
+
+                // --- Gestione Meteo ---
+                if (m != null)
+                {
+                    data = DateTime.Parse(m.time[i]);
+                    temp = (float)m.temperature_2m[i].Value;
+                }
+                else if (a != null)
+                {
+                    // Se non c'è il meteo, prendiamo la data dalla qualità dell'aria
+                    data = DateTime.Parse(a.time[i]);
+                }
+                else continue; // Se non abbiamo nemmeno una data valida, saltiamo l'ora i
+
+                // --- Gestione Aria ---
+                if (a != null && i < countAria && a.pm2_5[i] != null)
+                {
+                    inq = (float)a.pm2_5[i].Value;
+                }
+
+                // Aggiungiamo il record alla lista
+                lista.Add(new CInfo(data, temp, inq));
+            }
+
+            CreaGrafico();
+        }
+        */
         private async Task Aggiornamento()
         {
             Task<Meteo> tMeteo = null;
@@ -285,7 +344,7 @@ namespace Green_Economy
             if (tAria != null)
                 a = await tAria;
 
-            AggiornaDati(m, a);
+            await AggiornaDati(m, a);
         }
 
         private void btn_info_Click(object sender, EventArgs e)

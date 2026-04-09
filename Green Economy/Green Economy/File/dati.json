@@ -446,37 +446,37 @@
   },
   {
     "Data": "2026-04-09T17:00:00",
-    "Temperatura": 20.2,
+    "Temperatura": 19.9,
     "Inquinamento": 5.7
   },
   {
     "Data": "2026-04-09T18:00:00",
-    "Temperatura": 19.3,
+    "Temperatura": 19.0,
     "Inquinamento": 6.1
   },
   {
     "Data": "2026-04-09T19:00:00",
-    "Temperatura": 17.8,
+    "Temperatura": 17.6,
     "Inquinamento": 7.5
   },
   {
     "Data": "2026-04-09T20:00:00",
-    "Temperatura": 14.9,
+    "Temperatura": 15.4,
     "Inquinamento": 7.6
   },
   {
     "Data": "2026-04-09T21:00:00",
-    "Temperatura": 12.7,
+    "Temperatura": 12.6,
     "Inquinamento": 9.0
   },
   {
     "Data": "2026-04-09T22:00:00",
-    "Temperatura": 11.7,
+    "Temperatura": 11.6,
     "Inquinamento": 10.2
   },
   {
     "Data": "2026-04-09T23:00:00",
-    "Temperatura": 10.8,
+    "Temperatura": 10.5,
     "Inquinamento": 10.3
   }
 ]

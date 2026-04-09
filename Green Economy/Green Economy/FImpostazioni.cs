@@ -7,10 +7,6 @@ namespace Green_Economy
         public delegate Task AsyncImpostazioniHandler(object sender, ImpostazioniEventArgs e);
         public event AsyncImpostazioniHandler SalvaImpostazioni;
 
-        static readonly HttpClient client = new(); //comunica col server, riceve i dati(socket)
-        //classe per fare richiesta http, statico così esiste una sola istanza condivisa
-        //non serve crearne una nuova ogni volta che si fa una richiesta, sennò socket intasati
-
         public FImpostazioni()
         {
             InitializeComponent();

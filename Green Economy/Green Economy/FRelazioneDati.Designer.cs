@@ -35,7 +35,7 @@
             // 
             // plt_rapporto
             // 
-            plt_rapporto.Location = new Point(12, 12);
+            plt_rapporto.Location = new Point(24, 49);
             plt_rapporto.Name = "plt_rapporto";
             plt_rapporto.Size = new Size(562, 317);
             plt_rapporto.TabIndex = 0;
@@ -45,19 +45,19 @@
             dgv_dati.AllowUserToAddRows = false;
             dgv_dati.AllowUserToDeleteRows = false;
             dgv_dati.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgv_dati.Location = new Point(618, 12);
+            dgv_dati.Location = new Point(624, 107);
             dgv_dati.Name = "dgv_dati";
             dgv_dati.ReadOnly = true;
             dgv_dati.RowHeadersWidth = 51;
-            dgv_dati.Size = new Size(478, 317);
+            dgv_dati.Size = new Size(478, 159);
             dgv_dati.TabIndex = 1;
             // 
             // FRelazioneDati
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(192, 255, 192);
-            ClientSize = new Size(1126, 552);
+            BackColor = Color.LawnGreen;
+            ClientSize = new Size(1126, 426);
             Controls.Add(dgv_dati);
             Controls.Add(plt_rapporto);
             Name = "FRelazioneDati";
