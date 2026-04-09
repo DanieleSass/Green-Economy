@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace Green_Economy
 {
@@ -34,7 +35,12 @@ namespace Green_Economy
 
         private void FImpostazioni_Load(object sender, EventArgs e)
         {
-
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "../../../File/Impostazioni.json");
+            if (!File.Exists(path))
+            {
+                File.Create(path).Close(); //cosi il file non risulta utilizzato da un altro processo
+            }
+            
         }
 
         private void LeggiCittà() //legge da file json

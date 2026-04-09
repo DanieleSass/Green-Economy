@@ -23,6 +23,7 @@ namespace Green_Economy
         {
             dgv_dati.Columns.Add("temp", "Temperatura");
             dgv_dati.Columns.Add("inqu", "Inquinamento");
+            dgv_dati.AutoSizeColumnsMode=DataGridViewAutoSizeColumnsMode.Fill;
             List<string> etichette = new List<string> { "Media", "Moda", "Mediana", "Varianza" };
 
             dgv_dati.RowCount = etichette.Count;
@@ -81,10 +82,10 @@ namespace Green_Economy
             dgv_dati.Rows[0].Cells["inqu"].Value = inqu.Average().ToString("F2");
 
             //moda
-            //dgv_dati.Rows[1].Cells["temp"].Value = CalcolaModa(temperature);
-            //dgv_dati.Rows[1].Cells["inqu"].Value = CalcolaModa(inquinamento);
+            dgv_dati.Rows[1].Cells["temp"].Value = Moda(temp).ToString("F2");
+            dgv_dati.Rows[1].Cells["inqu"].Value = Moda(inqu).ToString("F2");
 
-            //media
+            //mediana
             dgv_dati.Rows[2].Cells["temp"].Value = Mediana(temp).ToString("F2");
             dgv_dati.Rows[2].Cells["inqu"].Value = Mediana(inqu).ToString("F2");
 
@@ -104,13 +105,44 @@ namespace Green_Economy
                 return nuova[nuova.Count / 2];
             }
         }
-        private void Moda()
+        private double Moda(List<double> lista)
         {
+            double numero;
+            int frequenza=0;
 
+            int frequenza_ultima=0;
+            double moda=0;
+
+            for (int i = 0; i < lista.Count; i++)
+            {
+                numero = lista[i];
+                frequenza = 0;
+                for (int j = 0; j < lista.Count; j++)
+                {
+                    if (numero == lista[j])
+                    {
+                        frequenza++;
+                    }
+                }
+                
+                if(frequenza>= frequenza_ultima)
+                {
+                    moda = numero;
+                    frequenza_ultima = frequenza;
+                }
+            }
+            return moda;
         }
-        private void Varianza()
+        private double Varianza(List<double> lista)
         {
-
+            double media = lista.Average();
+            int c = lista.Count;
+            double somma=0;
+            foreach(var n in lista)
+            {
+                somma+=Math.Pow(n - media,2);
+            }
+            return somma / c;
         }
     }
 }

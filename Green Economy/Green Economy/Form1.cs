@@ -225,13 +225,13 @@ namespace Green_Economy
 
             if (settings.flags.Contains(DatoDaAnalizzare.Meteo))
             {
-                string urlMeteo = $"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m&timezone=Europe%2FRome&past_days={settings.giorni}";
+                string urlMeteo = $"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m&timezone=Europe%2FRome&past_days={settings.giorni}&forecast_days=1";
                 tMeteo = LeggiDatiAPI<Meteo>(urlMeteo);
             }
 
             if (settings.flags.Contains(DatoDaAnalizzare.Aria))
             {
-                string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lon}&hourly=pm2_5&timezone=Europe%2FRome&past_days={settings.giorni}";
+                string urlAria = $"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lon}&hourly=pm2_5&timezone=Europe%2FRome&past_days={settings.giorni}&forecast_days=1";
                 tAria = LeggiDatiAPI<QualitaAria>(urlAria);
             }
 

@@ -45,11 +45,11 @@
             dgv_dati.AllowUserToAddRows = false;
             dgv_dati.AllowUserToDeleteRows = false;
             dgv_dati.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgv_dati.Location = new Point(618, 91);
+            dgv_dati.Location = new Point(618, 12);
             dgv_dati.Name = "dgv_dati";
             dgv_dati.ReadOnly = true;
             dgv_dati.RowHeadersWidth = 51;
-            dgv_dati.Size = new Size(422, 238);
+            dgv_dati.Size = new Size(478, 317);
             dgv_dati.TabIndex = 1;
             // 
             // FRelazioneDati
