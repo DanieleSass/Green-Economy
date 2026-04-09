@@ -21,5 +21,10 @@ namespace Green_Economy
         {
             this.Close();
         }
+
+        private void FGuida_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

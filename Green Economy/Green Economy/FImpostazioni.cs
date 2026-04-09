@@ -132,7 +132,7 @@ namespace Green_Economy
                 MessageBox.Show("Seleziona almeno un dato da analizzare");
                 return;
             }
-            if (giorni <= 0 || giorni > 100)
+            if (giorni <= 0 || giorni > 60)
             {
                 MessageBox.Show("Inserisci un numero di giorni da analizzare valido");
                 return;

@@ -21,10 +21,16 @@ namespace Green_Economy
 
         private void InizializzaDGV()
         {
-            dgv_dati.Columns.Add("temp", "Temperatura");
-            dgv_dati.Columns.Add("inqu", "Inquinamento");
+            dgv_dati.Columns.Add("temp", "Temperatura (C°)");
+            dgv_dati.Columns.Add("inqu", "Inquinamento (PM 2.5 (µg/m³))");
+            foreach (DataGridViewColumn col in dgv_dati.Columns)
+            {
+                col.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+
             dgv_dati.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgv_dati.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
+
             List<string> etichette = new List<string> { "Media", "Moda", "Mediana", "Varianza" };
 
             dgv_dati.RowCount = etichette.Count;
@@ -45,21 +51,19 @@ namespace Green_Economy
             //pulisce grafico precedente
             plt_rapporto.Plot.Clear();
             double[] date = new double[dati.Count];
-            double[] temp = new double[dati.Count];
-            double[] inqu = new double[dati.Count];
             double[] rapporti= new double[dati.Count];
             for (int i = 0; i < dati.Count; i++)
             {
                 date[i] = dati[i].Data.ToOADate(); //converte datetime in double
-                temp[i] = dati[i].Temperatura;
-                inqu[i] = dati[i].Inquinamento;
-                rapporti[i] = (temp[i] + inqu[i]) / 2;  //rapporto tra inquinamento e temperatura
+
+                rapporti[i] = (dati[i].Temperatura + dati[i].Inquinamento) / 2;
             }
 
             var graficoRapporto = plt_rapporto.Plot.Add.Scatter(date, rapporti);
             graficoRapporto.LegendText = "Rapporto Temperatura-Inquinamento";
             graficoRapporto.Color = ScottPlot.Colors.Green;
 
+            plt_rapporto.Plot.Axes.DateTimeTicksBottom();   //visualizza date in formato leggibile e umano
             plt_rapporto.Plot.ShowLegend(); //mostra legenda (già di default)
             plt_rapporto.Refresh();    //aggiorna graficamente(ridondante, per sicurezza)
         }

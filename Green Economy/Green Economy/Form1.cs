@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.ComponentModel;
 using System.Globalization;
 namespace Green_Economy
@@ -36,7 +37,7 @@ namespace Green_Economy
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            LeggiFile();
+            //LeggiFile();  //inutile se tanto carichiamo informazioni all' avvio dalla città delle impostazioni
             CaricaFormImpostazioni(); //carica form impostazioni all' avvio del form principale
             await Aggiornamento();
             dgv_tempo_temperatura.DataSource = lista;   //abbino la lista e le sue info al dgv        
@@ -206,6 +207,11 @@ namespace Green_Economy
                     string txt = File.ReadAllText(pathImp);
                     this.settings = JsonConvert.DeserializeObject<Impostazioni>(txt);
                 }
+                else
+                {
+                    File.Create(pathImp).Close(); //cosi il file non risulta utilizzato da un altro processo
+                    return;
+                }
             }
             catch (Exception e)
             {
@@ -251,7 +257,7 @@ namespace Green_Economy
                 }
                 else 
                 {
-                    // Se non c'è il meteo, prendiamo la data dalla qualità dell'aria
+                    //se non c'è il meteo, prendiamo la data dalla qualità dell'aria
                     data = DateTime.Parse(a.time[i]);
                     
                 }
@@ -262,6 +268,7 @@ namespace Green_Economy
                 lista.Add(new CInfo(data, temp, inq));
             }
             CreaGrafico();
+            lbl_citta.Text = $"Città: {settings.citta.ToString()}";
         }
         
         /*private async Task AggiornaDati(Meteo m, QualitaAria a)
@@ -317,6 +324,14 @@ namespace Green_Economy
         */
         private async Task Aggiornamento()
         {
+
+            //perchè file imp...json potrebbe non esistere o pk corrotto
+            if (settings == null || settings.citta == null)
+            {
+                //se mancano le impostazioni, esci dal metodo senza fare nulla
+                return;
+            }
+
             Task<Meteo> tMeteo = null;
             Task<QualitaAria> tAria = null;
 
@@ -374,6 +389,7 @@ namespace Green_Economy
         }
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]    //non salva indice ma stringa quindi al posto di 0 salva "Meteo"
     public enum DatoDaAnalizzare    //parametro per capire cosa è richiesto dall' utente
     {
         Meteo,

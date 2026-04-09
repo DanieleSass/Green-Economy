@@ -44,12 +44,21 @@
             // 
             dgv_dati.AllowUserToAddRows = false;
             dgv_dati.AllowUserToDeleteRows = false;
+            dgv_dati.AllowUserToResizeColumns = false;
+            dgv_dati.AllowUserToResizeRows = false;
+            dgv_dati.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgv_dati.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dgv_dati.BackgroundColor = Color.FromArgb(192, 255, 192);
+            dgv_dati.BorderStyle = BorderStyle.Fixed3D;
+            dgv_dati.CellBorderStyle = DataGridViewCellBorderStyle.Sunken;
             dgv_dati.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgv_dati.Location = new Point(624, 107);
+            dgv_dati.Location = new Point(608, 104);
+            dgv_dati.MultiSelect = false;
             dgv_dati.Name = "dgv_dati";
             dgv_dati.ReadOnly = true;
             dgv_dati.RowHeadersWidth = 51;
-            dgv_dati.Size = new Size(478, 159);
+            dgv_dati.SelectionMode = DataGridViewSelectionMode.CellSelect;
+            dgv_dati.Size = new Size(563, 130);
             dgv_dati.TabIndex = 1;
             // 
             // FRelazioneDati
@@ -57,7 +66,7 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.LawnGreen;
-            ClientSize = new Size(1126, 426);
+            ClientSize = new Size(1183, 426);
             Controls.Add(dgv_dati);
             Controls.Add(plt_rapporto);
             Name = "FRelazioneDati";

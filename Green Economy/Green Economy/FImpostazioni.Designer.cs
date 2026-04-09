@@ -34,7 +34,6 @@
             nmr_giorni = new NumericUpDown();
             chc_dati = new CheckedListBox();
             btn_salva = new Button();
-            btn_annulla = new Button();
             lbl_title = new Label();
             ((System.ComponentModel.ISupportInitialize)nmr_giorni).BeginInit();
             SuspendLayout();
@@ -72,6 +71,7 @@
             // nmr_giorni
             // 
             nmr_giorni.Location = new Point(301, 242);
+            nmr_giorni.Maximum = new decimal(new int[] { 60, 0, 0, 0 });
             nmr_giorni.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nmr_giorni.Name = "nmr_giorni";
             nmr_giorni.Size = new Size(234, 27);
@@ -91,25 +91,13 @@
             // 
             btn_salva.BackColor = Color.PaleGreen;
             btn_salva.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btn_salva.Location = new Point(147, 357);
+            btn_salva.Location = new Point(301, 345);
             btn_salva.Name = "btn_salva";
             btn_salva.Size = new Size(198, 60);
             btn_salva.TabIndex = 5;
             btn_salva.Text = "Salva ed Esci";
             btn_salva.UseVisualStyleBackColor = false;
             btn_salva.Click += btn_salva_Click;
-            // 
-            // btn_annulla
-            // 
-            btn_annulla.BackColor = Color.FromArgb(255, 128, 128);
-            btn_annulla.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btn_annulla.Location = new Point(471, 357);
-            btn_annulla.Name = "btn_annulla";
-            btn_annulla.Size = new Size(198, 60);
-            btn_annulla.TabIndex = 6;
-            btn_annulla.Text = "Annulla ed Esci";
-            btn_annulla.UseVisualStyleBackColor = false;
-            btn_annulla.Click += btn_annulla_Click;
             // 
             // lbl_title
             // 
@@ -127,7 +115,6 @@
             BackColor = Color.LawnGreen;
             ClientSize = new Size(800, 450);
             Controls.Add(lbl_title);
-            Controls.Add(btn_annulla);
             Controls.Add(btn_salva);
             Controls.Add(chc_dati);
             Controls.Add(nmr_giorni);
@@ -150,7 +137,6 @@
         private NumericUpDown nmr_giorni;
         private CheckedListBox chc_dati;
         private Button btn_salva;
-        private Button btn_annulla;
         private Label lbl_title;
     }
 }

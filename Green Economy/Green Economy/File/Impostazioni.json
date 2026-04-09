@@ -1,13 +1,13 @@
 {
-  "giorni": 5,
+  "giorni": 10,
   "citta": {
-    "denominazione_ita": "Agliano Terme",
-    "sigla_provincia": "AT",
-    "lat": 44.790749,
-    "lon": 8.2511043
+    "denominazione_ita": "Vaccarizzo Albanese",
+    "sigla_provincia": "CS",
+    "lat": 39.5867838,
+    "lon": 16.4329576
   },
   "flags": [
-    0,
-    1
+    "Meteo",
+    "Aria"
   ]
 }
