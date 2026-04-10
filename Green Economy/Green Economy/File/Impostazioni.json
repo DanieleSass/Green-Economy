@@ -1,10 +1,10 @@
 {
-  "giorni": 10,
+  "giorni": 8,
   "citta": {
-    "denominazione_ita": "Vaccarizzo Albanese",
-    "sigla_provincia": "CS",
-    "lat": 39.5867838,
-    "lon": 16.4329576
+    "denominazione_ita": "Abbateggio",
+    "sigla_provincia": "PE",
+    "lat": 42.2243803,
+    "lon": 14.0135289
   },
   "flags": [
     "Meteo",

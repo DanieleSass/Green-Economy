@@ -109,6 +109,9 @@ namespace Green_Economy
             grafico2.SmoothTension = 0.5;
             grafico2.Color = ScottPlot.Colors.Red;
 
+
+            plt_tempo_temperatura.Plot.Axes.SetLimitsX(date.Min(),DateTime.Now.ToOADate());
+
             //converte i numeri double di array di date in formato leggibile
             //anche a seconda di quanto si zooma (e di quanto spazio si ha per visualizzarle)
             plt_tempo_temperatura.Plot.Axes.DateTimeTicksBottom();
@@ -374,10 +377,13 @@ namespace Green_Economy
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-
-                string txt = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = await client.GetAsync(url);  //comunico con l'url in modo asincrono
+                response.EnsureSuccessStatusCode(); //risposta contiene contenuto e stato della risposta
+                if (!response.IsSuccessStatusCode)  //verifico se è andato a buon fine
+                {
+                    return default; // esce restituendo null (o il valore di default per T)
+                }
+                string txt = await response.Content.ReadAsStringAsync();  //content dato in formato json
 
                 return JsonConvert.DeserializeObject<MessaggioAPI<T>>(txt).hourly;
             }
